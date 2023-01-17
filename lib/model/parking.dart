@@ -1,4 +1,5 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Parking {
   final String id;
   final bool used;
@@ -12,4 +13,26 @@ class Parking {
     required this.carNo,
     required this.carName,
   });
+  //カスタム　オブジェクト
+  factory Parking.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return Parking(
+        id: data?['id'],
+        used: data?['used'],
+        contractor: data?['contractor'],
+        carNo: data?['carNo'],
+        carName: data?['carName']);
+  }
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'used': used,
+      'contractor': contractor,
+      'carNo': carNo,
+      'carName': carName,
+    };
+  }
 }
