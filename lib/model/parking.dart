@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Parking {
   final String id;
   final bool used;
+  final String contractorId;
   final String contractor;
   final String carNo;
   final String carName;
@@ -10,6 +11,7 @@ class Parking {
     required this.id,
     required this.used,
     required this.contractor,
+    required this.contractorId,
     required this.carNo,
     required this.carName,
   });
@@ -22,6 +24,7 @@ class Parking {
     return Parking(
         id: data?['id'],
         used: data?['used'],
+        contractorId: data?['contractorId'],
         contractor: data?['contractor'],
         carNo: data?['carNo'],
         carName: data?['carName']);
@@ -30,6 +33,7 @@ class Parking {
     return {
       'id': id,
       'used': used,
+      'contractorId': contractorId,
       'contractor': contractor,
       'carNo': carNo,
       'carName': carName,

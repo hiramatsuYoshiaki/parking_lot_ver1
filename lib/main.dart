@@ -8,6 +8,7 @@ import 'pages/contractor_list.dart';
 import 'pages/home_page.dart';
 import 'pages/not_found_page.dart';
 import 'pages/parking_lot_list.dart';
+import 'pages/parking_lot_user.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/': (content) => const HomePage(),
         '/home': (context) => const HomePage(),
         '/parking_lot_list': (context) => const ParkingLotList(), //駐車場区画一覧
+        '/parking_lot_user': (context) => const ParkingLotUser(), //区画使用者
         '/arrangement': (context) => const Arrangement(), //駐車場配置
         '/contractor_list': (context) => const ContractorList(), //契約者
         '/contractor': (context) => const Contractor(), //契約者

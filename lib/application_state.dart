@@ -1,14 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:parking_lot_ver1/pages/parking_lot_user.dart';
+import 'package:parking_lot_ver1/parkign_lot_user/user_display.dart';
 
 import 'firebase_options.dart';
 import 'model/status.dart';
 import 'model/parking.dart';
 
 class ApplicationState extends ChangeNotifier {
-  LoadState? _lodingState = LoadState.loading;
-  LoadState? get lodingState => _lodingState;
+  // loading state
+  LoadState? _loadingState = LoadState.loading;
+  LoadState? get loadingState => _loadingState;
+  // parkign lot user state
+
+  ParkingLotUserState _parkingLotUserState = ParkingLotUserState.display;
+  ParkingLotUserState get parkingLotUserState => _parkingLotUserState;
+  void setParkingLotUserState(ParkingLotUserState status) {
+    _parkingLotUserState = status;
+    notifyListeners();
+  }
 
   // late List<Parking> _parking = <Parking>[
   //   Parking(id: '1', used: false, contractor: '', carNo: '', carName: ''),
@@ -16,7 +27,7 @@ class ApplicationState extends ChangeNotifier {
   //   Parking(id: '3', used: false, contractor: '', carNo: '', carName: ''),
   //   Parking(id: '4', used: false, contractor: '', carNo: '', carName: ''),
   // ];
-  late List<Parking> _parking = <Parking>[];
+
   // final List<Parking> _parking = <Parking>[
   //   Parking(
   //       id: '1',
@@ -38,17 +49,31 @@ class ApplicationState extends ChangeNotifier {
   //       carName: 'レクサスLC500'),
   //   Parking(id: '4', used: false, contractor: '', carNo: '', carName: ''),
   // ];
+  late List<Parking> _parking = <Parking>[];
   List<Parking> get parking => _parking;
 
+  Parking _selectdParking = Parking(
+      id: '',
+      used: false,
+      contractor: '',
+      contractorId: '',
+      carNo: '',
+      carName: '');
+  Parking get selectedParking => _selectdParking;
+  void setSelectedParking(Parking parking) {
+    _selectdParking = parking;
+    notifyListeners();
+  }
+
   ApplicationState() {
-    print('ApplicationState start $_lodingState');
+    print('ApplicationState start $_loadingState');
     init();
-    print('ApplicationState end  $_lodingState');
+    print('ApplicationState end  $_loadingState');
   }
 
   Future<void> init() async {
     print('init start-------');
-    // setlodingState(LoadState.loading);
+    // setloadingState(LoadState.loading);
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -58,25 +83,25 @@ class ApplicationState extends ChangeNotifier {
     // getContractor();
 
     //-------
-    // print('setlodingState start : $_lodingState');
+    // print('setloadingState start : $_loadingState');
     // Future.delayed(Duration(seconds: 2), () {
-    //   setlodingState(LoadState.waiting);
-    //   print('setlodingState start : $_lodingState');
+    //   setloadingState(LoadState.waiting);
+    //   print('setloadingState start : $_loadingState');
     //   notifyListeners();
     // });
     // notifyListeners();
   }
 
-  void setlodingState(LoadState status) {
-    _lodingState = status;
+  void setloadingState(LoadState status) {
+    _loadingState = status;
   }
 
   Future<void> getParking() async {
     debugPrint('getParking()----start');
     //ローディング画面表示
-    setlodingState(LoadState.loading);
+    setloadingState(LoadState.loading);
 
-    debugPrint('setlodingState start : $_lodingState');
+    debugPrint('setloadingState start : $_loadingState');
     // _parking.clear();
     // _parking = <Parking>[
     //   Parking(
@@ -100,7 +125,7 @@ class ApplicationState extends ChangeNotifier {
     //   Parking(id: '4', used: false, contractor: '', carNo: '', carName: ''),
     // ];
     // notifyListeners();
-    // setlodingState(LoadState.waiting);
+    // setloadingState(LoadState.waiting);
 
     //コレクションのすべてのドキュメントを取得する
     //firestore get ----------------------------------
@@ -117,12 +142,13 @@ class ApplicationState extends ChangeNotifier {
     //     _parking.add(_parkingDoc);
     //   }
     //   notifyListeners();
-    //   setlodingState(LoadState.waiting);
+    //   setlaodingState(LoadState.waiting);
     // }).catchError((error) => debugPrint("Failed to get parking: $error"));
     //カスタムオオブジェクト
     final ref = FirebaseFirestore.instance
         .collection('parking')
-        .orderBy('id', descending: true)
+        // .orderBy('id', descending: true)
+        .orderBy('id')
         .withConverter<Parking>(
           fromFirestore: Parking.fromFirestore,
           toFirestore: (Parking parking, _) => parking.toFirestore(),
@@ -135,6 +161,7 @@ class ApplicationState extends ChangeNotifier {
                 Parking parkingDoc = Parking(
                   id: doc['id'] as String,
                   used: doc['used'] as bool,
+                  contractorId: doc['contractorId'] as String,
                   contractor: doc['contractor'] as String,
                   carNo: doc['carNo'] as String,
                   carName: doc['carName'] as String,
@@ -144,7 +171,7 @@ class ApplicationState extends ChangeNotifier {
             })
         .catchError((error) => debugPrint("Failed to parking: $error"));
     notifyListeners();
-    setlodingState(LoadState.waiting);
+    setloadingState(LoadState.waiting);
     // debugPrint('getParking _parking: $_parking');
 
     debugPrint('getParking()----end');

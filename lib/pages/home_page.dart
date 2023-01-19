@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
               child: Column(children: [
                 Expanded(child: Consumer<ApplicationState>(
                   builder: (BuildContext context, appState, _) {
-                    return appState.lodingState == LoadState.waiting
+                    return appState.loadingState == LoadState.waiting
                         // ? HomeSwitch(
                         //     homeState: appState.homeState,
                         //     setHomeState: appState.setHomeState,
