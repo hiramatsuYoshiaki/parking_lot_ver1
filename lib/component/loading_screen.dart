@@ -9,10 +9,14 @@ class LoadingScreen extends StatelessWidget {
     return Center(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text('$title...'),
+      children: <Widget>[
+        Text('$title...',
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: 16),
         ),
         const CircularProgressIndicator(),
       ],

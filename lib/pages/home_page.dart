@@ -30,64 +30,67 @@ class HomePage extends StatelessWidget {
               child: Column(children: [
                 Expanded(child: Consumer<ApplicationState>(
                   builder: (BuildContext context, appState, _) {
-                    return appState.loadingState == LoadState.waiting
+                    return
+                        // appState.loadingState == LoadState.waiting
                         // ? HomeSwitch(
                         //     homeState: appState.homeState,
                         //     setHomeState: appState.setHomeState,
                         //   )
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                    padding: const EdgeInsets.only(bottom: 24),
-                                    child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context)
-                                              .pushNamed('/arrangement');
-                                        },
-                                        child: const Text('arrangement'))),
-                                Container(
-                                    padding: const EdgeInsets.only(bottom: 24),
-                                    child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context)
-                                              .pushNamed('/parking_lot_list');
-                                        },
-                                        child: const Text('parking lot list'))),
-                                Container(
-                                    padding: const EdgeInsets.only(bottom: 24),
-                                    child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context)
-                                              .pushNamed('/contractor');
-                                        },
-                                        child: const Text('contractor'))),
-                                Container(
-                                    padding: const EdgeInsets.only(bottom: 24),
-                                    child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context)
-                                              .pushNamed('/contractor_list');
-                                        },
-                                        child: const Text('contractor list'))),
-                              ],
-                            ),
-                          )
-                        // : const LoadingScreenAddText(
-                        //     title: 'Now Loding ... Home');
-                        : Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const <Widget>[
-                                Text('Now Loding ... Home'),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                ),
-                                CircularProgressIndicator(),
-                              ],
-                            ),
-                          );
+                        // ?
+                        Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                              padding: const EdgeInsets.only(bottom: 24),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pushNamed('/arrangement');
+                                  },
+                                  child: const Text('arrangement'))),
+                          Container(
+                              padding: const EdgeInsets.only(bottom: 24),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    appState.getParking();
+                                    Navigator.of(context)
+                                        .pushNamed('/parking_lot_list');
+                                  },
+                                  child: const Text('parking lot list'))),
+                          Container(
+                              padding: const EdgeInsets.only(bottom: 24),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pushNamed('/contractor');
+                                  },
+                                  child: const Text('contractor'))),
+                          Container(
+                              padding: const EdgeInsets.only(bottom: 24),
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pushNamed('/contractor_list');
+                                  },
+                                  child: const Text('contractor list'))),
+                        ],
+                      ),
+                    );
+                    // : const LoadingScreenAddText(
+                    //     title: 'Now Loding ... Home');
+                    // : Center(
+                    //     child: Column(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: const <Widget>[
+                    //         Text('Now Loding ... Home'),
+                    //         Padding(
+                    //           padding: EdgeInsets.symmetric(vertical: 8),
+                    //         ),
+                    //         CircularProgressIndicator(),
+                    //       ],
+                    //     ),
+                    //   );
                   },
                 ))
               ]),

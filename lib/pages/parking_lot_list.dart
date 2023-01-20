@@ -48,14 +48,14 @@ class _ParkingLotListState extends State<ParkingLotList> {
                 itemBuilder: (context, index) {
                   return Container(
                       padding: const EdgeInsets.all(8),
-                      height: 50,
+                      height: 100,
                       alignment: Alignment.centerLeft,
                       color: appState.parking[index].used
                           ? Colors.green[200]
                           : Colors.grey[200],
                       child: appState.parking[index].used
                           ? Wrap(children: <Widget>[
-                              Text(appState.parking[index].id),
+                              Text(appState.parking[index].lotNo),
                               const SizedBox(width: 10),
                               Text(appState.parking[index].contractor),
                               const SizedBox(width: 10),
@@ -65,6 +65,20 @@ class _ParkingLotListState extends State<ParkingLotList> {
                               const SizedBox(width: 10),
                               TextButton(
                                 child: const Text('解約/修正'),
+                                onPressed: () {
+                                  appState.setSelectedParking(
+                                      appState.parking[index]);
+                                  appState.setParkingLotUserState(
+                                      ParkingLotUserState.modification);
+                                  Navigator.of(context)
+                                      .pushNamed('/parking_lot_user');
+                                  // widget.setSelectedActivity(
+                                  //     widget.selectedActivity,
+                                  //     ActivityState.activityDetail);
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('詳細'),
                                 onPressed: () {
                                   appState.setSelectedParking(
                                       appState.parking[index]);
@@ -79,7 +93,7 @@ class _ParkingLotListState extends State<ParkingLotList> {
                               ),
                             ])
                           : Wrap(children: <Widget>[
-                              Text(appState.parking[index].id),
+                              Text(appState.parking[index].lotNo),
                               const SizedBox(width: 10),
                               Text('空き'),
                               const SizedBox(width: 10),

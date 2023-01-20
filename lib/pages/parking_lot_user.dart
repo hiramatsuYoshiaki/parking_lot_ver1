@@ -27,17 +27,15 @@ class _ParkingLotUserState extends State<ParkingLotUser> {
     //           child:
     return Consumer<ApplicationState>(
       builder: (BuildContext context, appState, _) {
-        return appState.loadingState == LoadState.waiting
-            ? ParkingLotSwitch(
-                state: appState.parkingLotUserState,
-                // setHomeState: appState.setHomeState,
-                // 契約userAdd,
-                // 解約userCancel,
-                // 契約者リストから選択userList,
-                // 区画変更userReplace,
-                // 修正userModification,
-              )
-            : const LoadingScreen(title: 'Now Loding ... Parkign Lot User');
+        return ParkingLotSwitch(
+          state: appState.parkingLotUserState,
+          // setHomeState: appState.setHomeState,
+          // 契約userAdd,
+          // 解約userCancel,
+          // 契約者リストから選択userList,
+          // 区画変更userReplace,
+          // 修正userModification,
+        );
       },
     );
     //           ))),

@@ -7,6 +7,7 @@ class Parking {
   final String contractor;
   final String carNo;
   final String carName;
+  final String lotNo;
   Parking({
     required this.id,
     required this.used,
@@ -14,6 +15,7 @@ class Parking {
     required this.contractorId,
     required this.carNo,
     required this.carName,
+    required this.lotNo,
   });
   //カスタム　オブジェクト
   factory Parking.fromFirestore(
@@ -27,7 +29,8 @@ class Parking {
         contractorId: data?['contractorId'],
         contractor: data?['contractor'],
         carNo: data?['carNo'],
-        carName: data?['carName']);
+        carName: data?['carName'],
+        lotNo: data?['lotNo']);
   }
   Map<String, dynamic> toFirestore() {
     return {
@@ -37,6 +40,7 @@ class Parking {
       'contractor': contractor,
       'carNo': carNo,
       'carName': carName,
+      'lotNo': lotNo,
     };
   }
 }

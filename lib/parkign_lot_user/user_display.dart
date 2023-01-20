@@ -11,7 +11,7 @@ class UserDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Parking Lot User')),
+        appBar: AppBar(title: Text('User Dispaly')),
         body: SingleChildScrollView(
             child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1200),
@@ -38,25 +38,15 @@ class UserDisplay extends StatelessWidget {
                                     // Text('料金 ${appState.selectedParking.id}'),
                                     // Text('契約種別 ${appState.selectedParking.id}'),
                                     TextButton(
-                                      child: const Text('修正'),
+                                      child: const Text('もどる'),
                                       onPressed: () {
                                         // appState.setSelectedParking(
                                         //     appState.parking[index]);
-                                        appState.setParkingLotUserState(
-                                            ParkingLotUserState.modification);
+                                        // appState.setParkingLotUserState(
+                                        //     ParkingLotUserState.display);
+                                        // Navigator.of(context).pop();
                                         Navigator.of(context)
-                                            .pushNamed('/parking_lot_user');
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text('解約'),
-                                      onPressed: () {
-                                        // appState.setSelectedParking(
-                                        //     appState.parking[index]);
-                                        appState.setParkingLotUserState(
-                                            ParkingLotUserState.cancel);
-                                        Navigator.of(context)
-                                            .pushNamed('/parking_lot_user');
+                                            .pushNamed('/parking_lot_list');
                                       },
                                     ),
                                   ]))

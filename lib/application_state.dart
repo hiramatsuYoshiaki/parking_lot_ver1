@@ -58,7 +58,8 @@ class ApplicationState extends ChangeNotifier {
       contractor: '',
       contractorId: '',
       carNo: '',
-      carName: '');
+      carName: '',
+      lotNo: '');
   Parking get selectedParking => _selectdParking;
   void setSelectedParking(Parking parking) {
     _selectdParking = parking;
@@ -102,7 +103,7 @@ class ApplicationState extends ChangeNotifier {
     setloadingState(LoadState.loading);
 
     debugPrint('setloadingState start : $_loadingState');
-    // _parking.clear();
+    _parking.clear();
     // _parking = <Parking>[
     //   Parking(
     //       id: '1',
@@ -148,7 +149,7 @@ class ApplicationState extends ChangeNotifier {
     final ref = FirebaseFirestore.instance
         .collection('parking')
         // .orderBy('id', descending: true)
-        .orderBy('id')
+        .orderBy('lotNo')
         .withConverter<Parking>(
           fromFirestore: Parking.fromFirestore,
           toFirestore: (Parking parking, _) => parking.toFirestore(),
@@ -165,6 +166,7 @@ class ApplicationState extends ChangeNotifier {
                   contractor: doc['contractor'] as String,
                   carNo: doc['carNo'] as String,
                   carName: doc['carName'] as String,
+                  lotNo: doc['lotNo'] as String,
                 );
                 _parking.add(parkingDoc);
               })
@@ -175,5 +177,33 @@ class ApplicationState extends ChangeNotifier {
     // debugPrint('getParking _parking: $_parking');
 
     debugPrint('getParking()----end');
+  }
+
+  Future<void> updateParking(Parking parking) async {
+    debugPrint('updateParking()----start');
+    //ローディング画面表示
+    setloadingState(LoadState.loading);
+    try {
+      await FirebaseFirestore.instance.collection("parking").doc(parking.id)
+          // .withConverter(
+          //   fromFirestore: Activities.fromFirestore,
+          //   toFirestore: (Activities docData, options) => docData.toFirestore(),
+          // )
+          // .update({"plan.done": true,"actual.rideURL":RideLinkURL});
+          .update({
+        "contractor": parking.contractor,
+        // "plan.done": activity.plan.done,
+        // "plan.date": activity.plan.date,
+        // "actual.rideURL": activity.actual.rideURL,
+        // "actual.rideURL": 'https://aaa',
+        // "actual.ridePhotos": activity.actual.ridePhotos,
+        // "updateAt": DateTime.now(),
+      });
+      debugPrint('parking update ok!!!!!!!!');
+      notifyListeners();
+      setloadingState(LoadState.waiting);
+    } on FirebaseException catch (e) {
+      debugPrint('firebase Firestore parking update Error: $e');
+    }
   }
 }
