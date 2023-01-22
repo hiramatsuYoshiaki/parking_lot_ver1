@@ -64,7 +64,21 @@ class _ParkingLotListState extends State<ParkingLotList> {
                               Text(appState.parking[index].carName),
                               const SizedBox(width: 10),
                               TextButton(
-                                child: const Text('解約/修正'),
+                                child: const Text('詳細'),
+                                onPressed: () {
+                                  appState.setSelectedParking(
+                                      appState.parking[index]);
+                                  appState.setParkingLotUserState(
+                                      ParkingLotUserState.display);
+                                  Navigator.of(context)
+                                      .pushNamed('/parking_lot_user');
+                                  // widget.setSelectedActivity(
+                                  //     widget.selectedActivity,
+                                  //     ActivityState.activityDetail);
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('修正'),
                                 onPressed: () {
                                   appState.setSelectedParking(
                                       appState.parking[index]);
@@ -78,17 +92,14 @@ class _ParkingLotListState extends State<ParkingLotList> {
                                 },
                               ),
                               TextButton(
-                                child: const Text('詳細'),
+                                child: const Text('解約'),
                                 onPressed: () {
                                   appState.setSelectedParking(
                                       appState.parking[index]);
                                   appState.setParkingLotUserState(
-                                      ParkingLotUserState.display);
+                                      ParkingLotUserState.cancel);
                                   Navigator.of(context)
                                       .pushNamed('/parking_lot_user');
-                                  // widget.setSelectedActivity(
-                                  //     widget.selectedActivity,
-                                  //     ActivityState.activityDetail);
                                 },
                               ),
                             ])
@@ -106,6 +117,8 @@ class _ParkingLotListState extends State<ParkingLotList> {
                                 onPressed: () {
                                   appState.setParkingLotUserState(
                                       ParkingLotUserState.add);
+                                  appState.setSelectedParking(
+                                      appState.parking[index]);
                                   Navigator.of(context)
                                       .pushNamed('/parking_lot_user');
                                 },

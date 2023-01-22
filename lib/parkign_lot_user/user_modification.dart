@@ -10,16 +10,16 @@ class UserModification extends StatelessWidget {
   const UserModification({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>(debugLabel: '_UserModification');
-    TextEditingController _contractorController = TextEditingController();
-    _contractorController.text = "";
+    // final _formKey = GlobalKey<FormState>(debugLabel: '_UserModification');
+    // TextEditingController _contractorController = TextEditingController();
+    // _contractorController.text = "";
     return Scaffold(
-        appBar: AppBar(title: Text('Modification')),
+        appBar: AppBar(title: const Text('Modification')),
         body: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 1200),
+            constraints: const BoxConstraints(maxWidth: 1200),
             child: Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               alignment: Alignment.topCenter,
               child: Consumer<ApplicationState>(
                   builder: (BuildContext context, appState, _) {
@@ -55,10 +55,14 @@ class UserModificationForm extends StatefulWidget {
 class _UserModificationFormState extends State<UserModificationForm> {
   final _formKey = GlobalKey<FormState>(debugLabel: '_userModificationForm');
   TextEditingController _contractorController = TextEditingController(text: '');
+  TextEditingController _carNoController = TextEditingController(text: '');
+  TextEditingController _carNameController = TextEditingController(text: '');
   @override
   void initState() {
     super.initState();
     _contractorController.text = widget.selectedParking.contractor;
+    _carNoController.text = widget.selectedParking.carNo;
+    _carNameController.text = widget.selectedParking.carName;
   }
 
   @override
@@ -68,7 +72,16 @@ class _UserModificationFormState extends State<UserModificationForm> {
         child: Column(
           children: <Widget>[
             const SizedBox(height: 16),
+            Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "区画番号： ${widget.selectedParking.lotNo}",
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
+                )),
+            const SizedBox(height: 16),
             TextFormField(
+              enabled: false,
               controller: _contractorController,
               decoration: const InputDecoration(
                 labelText: '契約者',
@@ -85,6 +98,39 @@ class _UserModificationFormState extends State<UserModificationForm> {
               },
             ),
             const SizedBox(height: 16),
+            TextFormField(
+              controller: _carNoController,
+              decoration: const InputDecoration(
+                labelText: '車両番号',
+                hintText: '車両番号を入力してください',
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return '車両番号は必須です';
+                }
+                if (value.length > 31) {
+                  return '車両番号は31文字以内です';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _carNameController,
+              decoration: const InputDecoration(
+                labelText: '車種',
+                hintText: '車種を入力してください',
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return '車種は必須です';
+                }
+                if (value.length > 31) {
+                  return '車種は31文字以内です';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -108,8 +154,8 @@ class _UserModificationFormState extends State<UserModificationForm> {
                           used: true,
                           contractor: _contractorController.text,
                           contractorId: widget.selectedParking.contractorId,
-                          carNo: widget.selectedParking.carNo,
-                          carName: widget.selectedParking.carName,
+                          carNo: _carNoController.text,
+                          carName: _carNameController.text,
                           lotNo: widget.selectedParking.lotNo,
                         ));
                         widget.getParking();
@@ -126,28 +172,11 @@ class _UserModificationFormState extends State<UserModificationForm> {
             TextButton(
               child: const Text('もどる'),
               onPressed: () {
-                // appState.setSelectedParking(
-                //     appState.parking[index]);
-                // appState.setParkingLotUserState(
-                //     ParkingLotUserState.display);
-                // Navigator.of(context).pop();
                 Navigator.of(context).pushNamed('/parking_lot_list');
               },
             ),
             const SizedBox(height: 16),
           ],
-        )
-        // TextFormField(
-        //   decoration: const InputDecoration(
-        //     labelText: '契約者',
-        //     hintText: '契約者を入力してください',
-        //     // helperText: '必須'
-        //   ),
-        //   controller: _contractorController,
-        //   // controller: _contractorController,
-        //   // initialValue: 'appState.selectedParking.contractor',
-        //   // initialValue: 'Title',
-        // )
-        );
+        ));
   }
 }
