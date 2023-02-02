@@ -28,15 +28,15 @@ class UserDisplay extends StatelessWidget {
                                     children: [
                                     Text('id ${appState.selectedParking.id}'),
                                     Text(
+                                        'used ${appState.selectedParking.used ? 'true' : 'false'}'),
+                                    Text(
                                         '契約者 ${appState.selectedParking.contractor}'),
                                     Text(
                                         '車番 ${appState.selectedParking.carNo}'),
                                     Text(
                                         '車種 ${appState.selectedParking.carName}'),
-                                    // Text('契約日 ${appState.selectedParking.id}'),
-                                    // Text('解約日 ${appState.selectedParking.id}'),
-                                    // Text('料金 ${appState.selectedParking.id}'),
-                                    // Text('契約種別 ${appState.selectedParking.id}'),
+                                    Text(
+                                        '所有者 ${appState.selectedParking.carOwner}'),
                                     TextButton(
                                       child: const Text('もどる'),
                                       onPressed: () {

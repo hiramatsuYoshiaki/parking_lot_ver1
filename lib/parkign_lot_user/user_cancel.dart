@@ -23,7 +23,7 @@ class UserCancel extends StatelessWidget {
                       return appState.loadingState == LoadState.waiting
                           ? UserCancelForm(
                               selectedParking: appState.selectedParking,
-                              // cancelParking: appState.cancelParking,
+                              cancelParking: appState.cancelParking,
                               getParking: appState.getParking,
                             )
                           // Container(
@@ -55,11 +55,11 @@ class UserCancelForm extends StatefulWidget {
   const UserCancelForm(
       {Key? key,
       required this.selectedParking,
-      // required this.canselParking,
+      required this.cancelParking,
       required this.getParking})
       : super(key: key);
   final Parking selectedParking;
-  // final void Function(Parking parking) canselParking;
+  final void Function(Parking parking) cancelParking;
   final void Function() getParking;
 
   @override
@@ -71,12 +71,14 @@ class _UserCancelFormState extends State<UserCancelForm> {
   TextEditingController _contractorController = TextEditingController(text: '');
   TextEditingController _carNoController = TextEditingController(text: '');
   TextEditingController _carNameController = TextEditingController(text: '');
+  TextEditingController _carOwnerController = TextEditingController(text: '');
   @override
   void initState() {
     super.initState();
     _contractorController.text = widget.selectedParking.contractor;
     _carNoController.text = widget.selectedParking.carNo;
     _carNameController.text = widget.selectedParking.carName;
+    _carOwnerController.text = widget.selectedParking.carOwner;
   }
 
   @override
@@ -148,6 +150,24 @@ class _UserCancelFormState extends State<UserCancelForm> {
               },
             ),
             const SizedBox(height: 16),
+            TextFormField(
+              enabled: false,
+              controller: _carOwnerController,
+              decoration: const InputDecoration(
+                labelText: '所有者',
+                hintText: '所有者を入力してください',
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return '所有者は必須です';
+                }
+                if (value.length > 31) {
+                  return '所有者は31文字以内です';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -156,25 +176,35 @@ class _UserCancelFormState extends State<UserCancelForm> {
                   FloatingActionButton.extended(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // print('modification User');
-                        // print(widget.selectedParking.id);
-                        // print(widget.selectedParking.used ? 'true' : 'false');
-                        // print(widget.selectedParking.contractor);
-                        // print(widget.selectedParking.contractorId);
-                        // print(widget.selectedParking.carNo);
-                        // print(widget.selectedParking.carName);
-                        // print(widget.selectedParking.lotNo);
+                        print('cansel User');
+                        print(widget.selectedParking.id);
+                        print(widget.selectedParking.used ? 'true' : 'false');
+                        print(widget.selectedParking.contractor);
+                        print(widget.selectedParking.contractorId);
+                        print(widget.selectedParking.carNo);
+                        print(widget.selectedParking.carName);
+                        print(widget.selectedParking.carOwner);
+                        print(widget.selectedParking.lotNo);
 
-                        // widget.updateParking(Parking(
-                        //   id: widget.selectedParking.id,
-                        //   used: true,
-                        //   contractor: _contractorController.text,
-                        //   contractorId: widget.selectedParking.contractorId,
-                        //   carNo: _carNoController.text,
-                        //   carName: _carNameController.text,
-                        //   lotNo: widget.selectedParking.lotNo,
-                        // ));
-                        // widget.getParking();
+                        widget.cancelParking(Parking(
+                          id: widget.selectedParking.id,
+                          used: false,
+                          contractor: "",
+                          contractorId: "",
+                          carNo: "",
+                          carName: "",
+                          lotNo: widget.selectedParking.lotNo,
+                          carOwner: "",
+                          createdAt: DateTime.now(),
+                          updatedAt: DateTime.now(),
+                          // contractor: widget.selectedParking.contractor,
+                          // contractorId: widget.selectedParking.contractorId,
+                          // carNo: widget.selectedParking.carNo,
+                          // carName: widget.selectedParking.carName,
+                          // lotNo: widget.selectedParking.lotNo,
+                        ));
+                        widget.getParking();
+                        Navigator.of(context).pushNamed('/parking_lot_list');
                       }
                     },
                     label: const Text('解約', style: TextStyle(fontSize: 12)),
@@ -186,7 +216,7 @@ class _UserCancelFormState extends State<UserCancelForm> {
             ),
             const SizedBox(height: 16),
             TextButton(
-              child: const Text('もどる'),
+              child: const Text('キャンセル'),
               onPressed: () {
                 Navigator.of(context).pushNamed('/parking_lot_list');
               },

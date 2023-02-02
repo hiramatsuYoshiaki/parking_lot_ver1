@@ -7,7 +7,10 @@ class Parking {
   final String contractor;
   final String carNo;
   final String carName;
-  final String lotNo;
+  final String carOwner;
+  final int lotNo;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   Parking({
     required this.id,
     required this.used,
@@ -15,7 +18,10 @@ class Parking {
     required this.contractorId,
     required this.carNo,
     required this.carName,
+    required this.carOwner,
     required this.lotNo,
+    required this.createdAt,
+    required this.updatedAt,
   });
   //カスタム　オブジェクト
   factory Parking.fromFirestore(
@@ -24,13 +30,17 @@ class Parking {
   ) {
     final data = snapshot.data();
     return Parking(
-        id: data?['id'],
-        used: data?['used'],
-        contractorId: data?['contractorId'],
-        contractor: data?['contractor'],
-        carNo: data?['carNo'],
-        carName: data?['carName'],
-        lotNo: data?['lotNo']);
+      id: data?['id'],
+      used: data?['used'],
+      contractorId: data?['contractorId'],
+      contractor: data?['contractor'],
+      carNo: data?['carNo'],
+      carName: data?['carName'],
+      carOwner: data?['carOwner'],
+      lotNo: data?['lotNo'],
+      createdAt: data?['createdAt'],
+      updatedAt: data?['updatedAt'],
+    );
   }
   Map<String, dynamic> toFirestore() {
     return {
@@ -40,7 +50,10 @@ class Parking {
       'contractor': contractor,
       'carNo': carNo,
       'carName': carName,
+      'carOwner': carOwner,
       'lotNo': lotNo,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
   }
 }

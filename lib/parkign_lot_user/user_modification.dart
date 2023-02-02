@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:parking_lot_ver1/model/parking.dart';
 import 'package:parking_lot_ver1/model/status.dart';
@@ -57,12 +58,14 @@ class _UserModificationFormState extends State<UserModificationForm> {
   TextEditingController _contractorController = TextEditingController(text: '');
   TextEditingController _carNoController = TextEditingController(text: '');
   TextEditingController _carNameController = TextEditingController(text: '');
+  TextEditingController _carOwnerController = TextEditingController(text: '');
   @override
   void initState() {
     super.initState();
     _contractorController.text = widget.selectedParking.contractor;
     _carNoController.text = widget.selectedParking.carNo;
     _carNameController.text = widget.selectedParking.carName;
+    _carOwnerController.text = widget.selectedParking.carOwner;
   }
 
   @override
@@ -132,6 +135,23 @@ class _UserModificationFormState extends State<UserModificationForm> {
               },
             ),
             const SizedBox(height: 16),
+            TextFormField(
+              controller: _carOwnerController,
+              decoration: const InputDecoration(
+                labelText: '所有者',
+                hintText: '所有者を入力してください',
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return '所有者は必須です';
+                }
+                if (value.length > 31) {
+                  return '所有者は31文字以内です';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -147,6 +167,7 @@ class _UserModificationFormState extends State<UserModificationForm> {
                         print(widget.selectedParking.contractorId);
                         print(widget.selectedParking.carNo);
                         print(widget.selectedParking.carName);
+                        print(widget.selectedParking.carOwner);
                         print(widget.selectedParking.lotNo);
 
                         widget.updateParking(Parking(
@@ -156,9 +177,13 @@ class _UserModificationFormState extends State<UserModificationForm> {
                           contractorId: widget.selectedParking.contractorId,
                           carNo: _carNoController.text,
                           carName: _carNameController.text,
+                          carOwner: _carOwnerController.text,
                           lotNo: widget.selectedParking.lotNo,
+                          createdAt: DateTime.now(),
+                          updatedAt: DateTime.now(),
                         ));
                         widget.getParking();
+                        Navigator.of(context).pushNamed('/parking_lot_list');
                       }
                     },
                     label: const Text('修正', style: TextStyle(fontSize: 12)),
@@ -170,7 +195,7 @@ class _UserModificationFormState extends State<UserModificationForm> {
             ),
             const SizedBox(height: 16),
             TextButton(
-              child: const Text('もどる'),
+              child: const Text('キャンセル'),
               onPressed: () {
                 Navigator.of(context).pushNamed('/parking_lot_list');
               },

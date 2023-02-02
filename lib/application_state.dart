@@ -1,10 +1,11 @@
+// ignore_for_file: invalid_return_type_for_catch_error
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:parking_lot_ver1/pages/parking_lot_user.dart';
-import 'package:parking_lot_ver1/parkign_lot_user/user_display.dart';
 
 import 'firebase_options.dart';
+import 'model/contractor.dart';
 import 'model/status.dart';
 import 'model/parking.dart';
 
@@ -49,17 +50,21 @@ class ApplicationState extends ChangeNotifier {
   //       carName: 'レクサスLC500'),
   //   Parking(id: '4', used: false, contractor: '', carNo: '', carName: ''),
   // ];
-  late List<Parking> _parking = <Parking>[];
+  late final List<Parking> _parking = <Parking>[];
   List<Parking> get parking => _parking;
 
   Parking _selectdParking = Parking(
-      id: '',
-      used: false,
-      contractor: '',
-      contractorId: '',
-      carNo: '',
-      carName: '',
-      lotNo: '');
+    id: '',
+    used: false,
+    contractor: '',
+    contractorId: '',
+    carNo: '',
+    carName: '',
+    lotNo: 0,
+    carOwner: '',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
   Parking get selectedParking => _selectdParking;
   void setSelectedParking(Parking parking) {
     _selectdParking = parking;
@@ -78,6 +83,11 @@ class ApplicationState extends ChangeNotifier {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    //--
+    //--初期設定　駐車場区画番号36までを空ですべて作る。
+    //--firestore のコレクションparkingを削除してから実行する。
+    // initialSetParking();
+    //--
     //駐車場情報
     getParking();
     //契約者情報
@@ -158,7 +168,8 @@ class ApplicationState extends ChangeNotifier {
         .get()
         .then((QuerySnapshot querySnapshot) => {
               querySnapshot.docs.forEach((doc) {
-                debugPrint('dic:${doc['contractor']}');
+                debugPrint(
+                    'lotNo ${doc['lotNo']} contractor:${doc['contractor']}');
                 Parking parkingDoc = Parking(
                   id: doc['id'] as String,
                   used: doc['used'] as bool,
@@ -166,7 +177,10 @@ class ApplicationState extends ChangeNotifier {
                   contractor: doc['contractor'] as String,
                   carNo: doc['carNo'] as String,
                   carName: doc['carName'] as String,
-                  lotNo: doc['lotNo'] as String,
+                  carOwner: doc['carOwner'] as String,
+                  lotNo: doc['lotNo'] as int,
+                  createdAt: doc['createdAt'].toDate(),
+                  updatedAt: doc['updatedAt'].toDate(),
                 );
                 _parking.add(parkingDoc);
               })
@@ -174,8 +188,6 @@ class ApplicationState extends ChangeNotifier {
         .catchError((error) => debugPrint("Failed to parking: $error"));
     notifyListeners();
     setloadingState(LoadState.waiting);
-    // debugPrint('getParking _parking: $_parking');
-
     debugPrint('getParking()----end');
   }
 
@@ -192,18 +204,188 @@ class ApplicationState extends ChangeNotifier {
           // .update({"plan.done": true,"actual.rideURL":RideLinkURL});
           .update({
         "contractor": parking.contractor,
-        // "plan.done": activity.plan.done,
-        // "plan.date": activity.plan.date,
-        // "actual.rideURL": activity.actual.rideURL,
-        // "actual.rideURL": 'https://aaa',
-        // "actual.ridePhotos": activity.actual.ridePhotos,
-        // "updateAt": DateTime.now(),
+        "carNo": parking.carNo,
+        "carName": parking.carName,
+        "carOwner": parking.carOwner,
+        "updatedAt": DateTime.now(),
       });
-      debugPrint('parking update ok!!!!!!!!');
+      debugPrint('lot no : ${parking.lotNo} --->  parking update ok!!!!!!!!');
+      getParking();
       notifyListeners();
       setloadingState(LoadState.waiting);
     } on FirebaseException catch (e) {
       debugPrint('firebase Firestore parking update Error: $e');
+    }
+  }
+
+  Future<void> addParking(Parking parking, Contract contract) async {
+    debugPrint('addParking()----start');
+    setloadingState(LoadState.loading);
+    Contract docContractor = Contract(
+      id: contract.id,
+      name: contract.name,
+      address: contract.address,
+      tel: contract.tel,
+      parkingLot: contract.parkingLot,
+      createdAt: contract.createdAt,
+      updatedAt: contract.updatedAt,
+    );
+    try {
+      // contractor add----
+      await FirebaseFirestore.instance
+          .collection("contractor")
+          .withConverter(
+            fromFirestore: Contract.fromFirestore,
+            toFirestore: (Contract docContractor, options) =>
+                docContractor.toFirestore(),
+          )
+          .add(docContractor)
+          .then((documentSnapshot) => {
+                debugPrint("Added Data with ID: ${documentSnapshot.id}"),
+                FirebaseFirestore.instance
+                    .collection("contractor")
+                    .doc(documentSnapshot.id)
+                    .update({
+                  "id": documentSnapshot.id,
+                })
+              });
+      //parking update------
+      await FirebaseFirestore.instance.collection("parking").doc(parking.id)
+          // .withConverter(
+          //   fromFirestore: Activities.fromFirestore,
+          //   toFirestore: (Activities docData, options) => docData.toFirestore(),
+          // )
+          // .update({"plan.done": true,"actual.rideURL":RideLinkURL});
+          .update({
+        "used": parking.used,
+        "contractor": parking.contractor,
+        "carNo": parking.carNo,
+        "carName": parking.carName,
+        "carOwner": parking.carOwner,
+        "updatedAt": DateTime.now(),
+      });
+      debugPrint('lot no : ${parking.lotNo} ---> parking update ok!');
+      getParking();
+      notifyListeners();
+      setloadingState(LoadState.waiting);
+    } on FirebaseException catch (e) {
+      debugPrint('firebase Firestore parking update Error: $e');
+    }
+  }
+
+  Future<void> cancelParking(Parking parking) async {
+    debugPrint('cancelParking()----start');
+    //ローディング画面表示
+    setloadingState(LoadState.loading);
+    try {
+      await FirebaseFirestore.instance.collection("parking").doc(parking.id)
+          // .withConverter(
+          //   fromFirestore: Activities.fromFirestore,
+          //   toFirestore: (Activities docData, options) => docData.toFirestore(),
+          // )
+          // .update({"plan.done": true,"actual.rideURL":RideLinkURL});
+          .update({
+        // "id": parking.id,
+        "used": parking.used,
+        "contractor": parking.contractor,
+        "contractorId": parking.contractorId,
+        "carNo": parking.carNo,
+        "carName": parking.carName,
+        // "lotNo": parking.lotNo,
+        "updatedAt": DateTime.now(),
+      });
+      debugPrint('lot no : ${parking.lotNo} --->  parking cancel ok!!!!!!!!');
+      getParking();
+      notifyListeners();
+      setloadingState(LoadState.waiting);
+    } on FirebaseException catch (e) {
+      debugPrint('firebase Firestore parking cancel Error: $e');
+    }
+  }
+
+//初期設定　駐車場区画番号36までを空ですべて作る。
+//firestore のコレクションparkingを削除してから実行する。
+  Future<void> initialSetParking() async {
+    debugPrint('initialSetParking()----start');
+    List<int> lotIds = [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38
+    ];
+
+    try {
+      for (var lotid in lotIds) {
+        Parking docData = Parking(
+          id: "",
+          used: false,
+          contractor: "",
+          contractorId: "",
+          carNo: "",
+          carName: "",
+          carOwner: "",
+          lotNo: lotid,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        FirebaseFirestore.instance
+            .collection("parking")
+            .withConverter(
+              fromFirestore: Parking.fromFirestore,
+              toFirestore: (Parking docData, options) => docData.toFirestore(),
+            )
+            .add(docData)
+            .then((documentSnapshot) => {
+                  debugPrint("Added Data with ID: ${documentSnapshot.id}"),
+                  FirebaseFirestore.instance
+                      .collection("parking")
+                      .doc(documentSnapshot.id)
+                      .update({
+                    "id": documentSnapshot.id,
+                  })
+                });
+        debugPrint('lotid:$lotid initialSetParking add ok!!!!!!!!');
+      }
+
+      notifyListeners();
+      setloadingState(LoadState.waiting);
+    } on FirebaseException catch (e) {
+      debugPrint('firebase Firestore initialSetParking add Error: $e');
     }
   }
 }

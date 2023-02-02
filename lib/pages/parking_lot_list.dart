@@ -55,7 +55,7 @@ class _ParkingLotListState extends State<ParkingLotList> {
                           : Colors.grey[200],
                       child: appState.parking[index].used
                           ? Wrap(children: <Widget>[
-                              Text(appState.parking[index].lotNo),
+                              Text(appState.parking[index].lotNo.toString()),
                               const SizedBox(width: 10),
                               Text(appState.parking[index].contractor),
                               const SizedBox(width: 10),
@@ -104,7 +104,7 @@ class _ParkingLotListState extends State<ParkingLotList> {
                               ),
                             ])
                           : Wrap(children: <Widget>[
-                              Text(appState.parking[index].lotNo),
+                              Text(appState.parking[index].lotNo.toString()),
                               const SizedBox(width: 10),
                               Text('空き'),
                               const SizedBox(width: 10),
