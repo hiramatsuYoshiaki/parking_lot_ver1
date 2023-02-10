@@ -11,10 +11,8 @@ class LoadingScreen extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text('$title...',
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold)),
+            style: const TextStyle(
+                color: Colors.grey, fontSize: 18, fontWeight: FontWeight.bold)),
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 16),
         ),

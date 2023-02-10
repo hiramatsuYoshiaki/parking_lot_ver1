@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 
 import 'application_state.dart';
 import 'pages/arrangement.dart';
+import 'pages/auth.dart';
 import 'pages/contractor.dart';
 import 'pages/contractor_list.dart';
 import 'pages/home_page.dart';
+import 'pages/logout.dart';
 import 'pages/not_found_page.dart';
 import 'pages/parking_lot_list.dart';
 import 'pages/parking_lot_user.dart';
+import 'auth_guard.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(
@@ -40,11 +43,53 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (content) => const HomePage(),
         '/home': (context) => const HomePage(),
-        '/parking_lot_list': (context) => const ParkingLotList(), //駐車場区画一覧
-        '/parking_lot_user': (context) => const ParkingLotUser(), //区画使用者
-        '/arrangement': (context) => const Arrangement(), //駐車場配置
-        '/contractor_list': (context) => const ContractorList(), //契約者
-        '/contractor': (context) => const Contractor(), //契約者
+        //駐車場区画一覧
+        '/parking_lot_list': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const ParkingLotList(),
+                  )),
+            )),
+        //区画使用者
+        // '/parking_lot_user': (context) => const ParkingLotUser(),
+        '/parking_lot_user': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const ParkingLotUser(),
+                  )),
+            )),
+        //駐車場配置
+        // '/arrangement': (context) => const Arrangement(),
+        '/arrangement': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const Arrangement(),
+                  )),
+            )),
+        //契約者
+        // '/contractor_list': (context) => const ContractorList(),
+        '/contractor_list': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const ContractorList(),
+                  )),
+            )),
+        //契約者
+        // '/contractor': (context) => const Contractor(),
+        '/contractor': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const Contractor(),
+                  )),
+            )),
+        //
+        '/login': (context) => const Auth(), //ログイン
+        '/logout': (context) => const Logout(), //ログアウト
       },
       onUnknownRoute: (RouteSettings settings) {
         return MaterialPageRoute<void>(

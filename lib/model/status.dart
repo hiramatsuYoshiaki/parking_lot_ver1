@@ -11,3 +11,19 @@ enum ParkingLotUserState {
   replace,
   modification,
 }
+
+enum LoginState {
+  loggedOut,
+  emailAdress,
+  register,
+  password,
+  welcom,
+  sendEmail,
+  loggedIn,
+  passReset
+}
+
+enum AuthState {
+  loggedIn,
+  loggedOut,
+}

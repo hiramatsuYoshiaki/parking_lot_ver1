@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:parking_lot_ver1/pages/arrangement.dart';
 import 'package:provider/provider.dart';
 
 import '../application_state.dart';
-import '../model/status.dart';
+import '../ui/app_bar_auth.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,9 +10,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Parking Lot Ver1'),
-        ),
+        // appBar: AppBar(
+        //   title: const Text('Parking Lot Ver1'),
+        // ),
+        appBar: const AppBarAuth(titleText: 'Parking Lot Ver1'),
         body: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
                               padding: const EdgeInsets.only(bottom: 24),
                               child: ElevatedButton(
                                   onPressed: () {
-                                    appState.getParking();
+                                    // appState.getParking();
                                     Navigator.of(context)
                                         .pushNamed('/parking_lot_list');
                                   },

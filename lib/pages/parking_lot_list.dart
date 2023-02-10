@@ -115,10 +115,14 @@ class _ParkingLotListState extends State<ParkingLotList> {
                               TextButton(
                                 child: const Text('登録'),
                                 onPressed: () {
+                                  print('push button add');
+                                  //ステータス add,modification,cansel,display,replace,list
                                   appState.setParkingLotUserState(
                                       ParkingLotUserState.add);
+                                  //駐車場区画の情報
                                   appState.setSelectedParking(
                                       appState.parking[index]);
+                                  appState.getContract();
                                   Navigator.of(context)
                                       .pushNamed('/parking_lot_user');
                                 },

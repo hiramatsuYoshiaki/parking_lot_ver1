@@ -1,6 +1,9 @@
 // ignore_for_file: invalid_return_type_for_catch_error
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
@@ -10,18 +13,30 @@ import 'model/status.dart';
 import 'model/parking.dart';
 
 class ApplicationState extends ChangeNotifier {
+  //Authentication user
+  User? _currentUser;
+  User? get getCurrentUser => _currentUser;
+
+  //loginstate
+  LoginState _loginState = LoginState.loggedOut;
+  LoginState get loginState => _loginState;
+  void setLoginState(LoginState status) {
+    _loginState = status;
+    notifyListeners();
+  }
+
   // loading state
   LoadState? _loadingState = LoadState.loading;
   LoadState? get loadingState => _loadingState;
-  // parkign lot user state
 
+  // parkign lot user state
   ParkingLotUserState _parkingLotUserState = ParkingLotUserState.display;
   ParkingLotUserState get parkingLotUserState => _parkingLotUserState;
   void setParkingLotUserState(ParkingLotUserState status) {
     _parkingLotUserState = status;
     notifyListeners();
   }
-
+  //駐車場区画情報
   // late List<Parking> _parking = <Parking>[
   //   Parking(id: '1', used: false, contractor: '', carNo: '', carName: ''),
   //   Parking(id: '2', used: false, contractor: '', carNo: '', carName: ''),
@@ -52,6 +67,10 @@ class ApplicationState extends ChangeNotifier {
   // ];
   late final List<Parking> _parking = <Parking>[];
   List<Parking> get parking => _parking;
+  void clearParking() {
+    parking.clear();
+    notifyListeners();
+  }
 
   Parking _selectdParking = Parking(
     id: '',
@@ -71,6 +90,24 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
+  //契約者情報
+  late final List<Contract> _contracts = <Contract>[];
+  List<Contract> get contracts => _contracts;
+
+  Contract _selectedContract = Contract(
+      id: '',
+      name: '',
+      address: '',
+      tel: '',
+      parkingLot: <ParkingLot>[],
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now());
+  Contract get selectedContract => _selectedContract;
+  void setSelectedContract(Contract contract) {
+    _selectedContract = contract;
+    notifyListeners();
+  }
+
   ApplicationState() {
     print('ApplicationState start $_loadingState');
     init();
@@ -79,17 +116,42 @@ class ApplicationState extends ChangeNotifier {
 
   Future<void> init() async {
     print('init start-------');
-    // setloadingState(LoadState.loading);
+    setloadingState(LoadState.loading);
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    FirebaseAuth.instance.userChanges().listen((user) async {
+      print('ApplicationState init userChanges------ start ');
+
+      if (user != null) {
+        print('userChanges logged in');
+        _currentUser = user;
+        getParking();
+        // setloadingState(LoadState.waiting);
+        notifyListeners();
+        print('userChanges logged in');
+        print(user.uid);
+        print(user.email);
+        print(user.displayName);
+        print(user.emailVerified);
+        print('photoURL: ${user.photoURL}');
+      } else {
+        _loginState = LoginState.loggedOut;
+        _currentUser = null;
+        print('user logged out ');
+        // print(user);
+        clearParking();
+        setloadingState(LoadState.waiting);
+        notifyListeners();
+      }
+    });
     //--
     //--初期設定　駐車場区画番号36までを空ですべて作る。
     //--firestore のコレクションparkingを削除してから実行する。
     // initialSetParking();
     //--
     //駐車場情報
-    getParking();
+    // getParking();
     //契約者情報
     // getContractor();
 
@@ -107,12 +169,378 @@ class ApplicationState extends ChangeNotifier {
     _loadingState = status;
   }
 
+  //契約者情報をすべて取得
+  Future<void> getContract() async {
+    debugPrint('getContract()----start!!!');
+    //ローディング画面表示
+    setloadingState(LoadState.loading);
+    _contracts.clear();
+
+    final ref = FirebaseFirestore.instance
+        .collection('contractor')
+        .withConverter<Contract>(
+          fromFirestore: Contract.fromFirestore,
+          toFirestore: (Contract contract, _) => contract.toFirestore(),
+        );
+    debugPrint('getContract()----ref.get');
+    await ref
+        .get()
+        .then((QuerySnapshot querySnapshot) => {
+              querySnapshot.docs.forEach((doc) {
+                debugPrint('id ${doc['id']} ');
+                debugPrint('name ${doc['name']} ');
+                //parkingLot
+                debugPrint(doc['parkingLot'][0]?['lotNo'].toString());
+                debugPrint(doc['parkingLot'][0]?['id'].toString());
+                debugPrint(doc['parkingLot'][0]?['carOwner'].toString());
+                // debugPrint(doc['parkingLot'].longth.toString());
+                // List<Map<String, dynamic>> lots =
+                //     List<Map<String, dynamic>>.from(doc['parkingLot']);
+
+                // List<ParkingLot> parkingLotList = List<ParkingLot>.from(lots);
+
+                doc['parkingLot'].forEach((value) {
+                  debugPrint('parkingLot list forEach ');
+                  debugPrint('lotNo ${value['lotNo']} ');
+                  debugPrint('id ${value['id']} ');
+                  debugPrint('carOwner ${value['carOwner']} ');
+                  //
+                  Contract contract = Contract(
+                    id: doc['id'],
+                    name: doc['name'],
+                    address: doc['address'],
+                    tel: doc['tel'],
+                    // parkingLot: [],
+                    // parkingLot: List<ParkingLot>.from(doc['parkingLot']),
+                    parkingLot: List<ParkingLot>.from(doc['parkingLot']
+                        .map(
+                          (value) => ParkingLot(
+                            id: value['id'],
+                            used: value['used'],
+                            carNo: value['carNo'],
+                            carName: value['carName'],
+                            carOwner: value['carOwner'],
+                            lotNo: value['lotNo'],
+                            // contractDate: value?['contractDate'] == null
+                            //     ? value['contractDate'].toDate()
+                            //     : value?['createdAt'].toDate(),
+                            // cancelDate: value?['cancelDate'] == null
+                            //     ? value['cancelDate'].toDate()
+                            //     : value?['createdAt'].toDate(),
+                            // contractDate: DateTime.now(),
+                            contractDate: value['contractDate'].toDate(),
+                            // cancelDate: DateTime.now(),
+                            cancelDate: value['cancelDate'].toDate(),
+                            contractType: value['contractType'],
+                            // createdAt: value?['createdAt'].toDate(),
+                            // updatedAt: value?['updatedAt'].toDate(),
+                            // createdAt: DateTime.now(),
+                            createdAt: value['createdAt'].toDate(),
+                            // updatedAt: DateTime.now(),
+                            updatedAt: value?['updatedAt'].toDate(),
+                          ),
+                        )
+                        .toList()),
+                    createdAt: doc['createdAt'].toDate(),
+                    updatedAt: doc['updatedAt'].toDate(),
+                  );
+                  _contracts.add(contract);
+                });
+                // doc['parkingLot'].map((value) {
+                //   debugPrint('parkingLot list map ');
+                //   debugPrint('lotNo ${value['lotNo']} ');
+                //   debugPrint('id ${value['id']} ');
+                //   debugPrint('carOwner ${value['carOwner']} ');
+                // }).toList();
+              })
+            })
+        .catchError((error) => debugPrint("Failed to parking: $error"));
+    setloadingState(LoadState.waiting);
+    debugPrint('getContract end <<<<');
+    notifyListeners();
+  }
+
+  // Future<void> getContract() async {
+  //   debugPrint('getContract  start >>>>>!!!!');
+  //   setloadingState(LoadState.loading);
+  //   _contracts.clear();
+
+  //   try {
+  //     final ref = FirebaseFirestore.instance
+  //         .collection('contractor')
+  //         // .orderBy('name')
+  //         .withConverter<Contract>(
+  //           fromFirestore: Contract.fromFirestore,
+  //           toFirestore: (Contract contract, _) => contract.toFirestore(),
+  //         );
+  //     debugPrint('get Contract  -------');
+  //     final docSnap = await ref.get();
+  //     final List<Contract> city =
+  //         List<Contract>.from(docSnap.docs as List<Contract>);
+  //     debugPrint('docSnap.docs.map-----');
+
+  //     docSnap.docs.map((doc) {
+  //       // `withConverter()`でContract型にデコードする関数を定義しているため
+  //       // Contractクラスが得られる
+  //       debugPrint('docSnap.docs.map *******');
+  //       debugPrint(doc.id);
+  //       Contract contract = Contract(
+  //         id: doc['id'],
+  //         name: doc['name'],
+  //         address: doc['address'],
+  //         tel: doc['tel'],
+  //         // parkingLot: [ParkingLot.from(doc['parkingLot'])],
+  //         // parkingLot: doc['parkingLot'] as List<ParkingLot>,
+  //         parkingLot: List<ParkingLot>.from(doc['parkingLot']
+  //                 .map(
+  //                   (value) => ParkingLot(
+  //                     id: value['id'],
+  //                     used: value['used'],
+  //                     carNo: value['carNo'],
+  //                     carName: value['carName'],
+  //                     carOwner: value['carOwner'],
+  //                     lotNo: value['lotNo'],
+  //                     // contractDate: value?['contractDate'] == null
+  //                     //     ? value['contractDate'].toDate()
+  //                     //     : value?['createdAt'].toDate(),
+  //                     // cancelDate: value?['cancelDate'] == null
+  //                     //     ? value['cancelDate'].toDate()
+  //                     //     : value?['createdAt'].toDate(),
+  //                     contractDate: DateTime.now(),
+  //                     cancelDate: DateTime.now(),
+  //                     contractType: value?['contractType'],
+  //                     // createdAt: value?['createdAt'].toDate(),
+  //                     // updatedAt: value?['updatedAt'].toDate(),
+  //                     createdAt: DateTime.now(),
+  //                     updatedAt: DateTime.now(),
+  //                   ),
+  //                 )
+  //                 .toList() ??
+  //             []),
+  //         createdAt: doc['createdAt'].toDate(),
+  //         updatedAt: doc['updateAt'].toDate(),
+  //       );
+  //       // Contract contract = Contract(
+  //       //   id: doc.id,
+  //       //   name: doc.name,
+  //       //   address: doc.address,
+  //       //   tel: doc.tel,
+  //       //   // parkingLot: [ParkingLot.from(doc['parkingLot'])],
+  //       //   parkingLot: doc.parkingLot,
+  //       //   createdAt: doc.createdAt,
+  //       //   updatedAt: doc.updatedAt,
+  //       // );
+  //       _contracts.add(contract);
+  //       debugPrint('contract length ${_contracts.length.toString()}');
+  //       _contracts.map((value) =>
+  //           debugPrint('contract: ${value.parkingLot![0].carOwner}'));
+  //     });
+
+  //     setloadingState(LoadState.waiting);
+  //     debugPrint('getContract end <<<<');
+  //     notifyListeners();
+  //   } on FirebaseException catch (e) {
+  //     // Caught an exception from Firebase.
+  //     debugPrint("Failed with error '${e.code}': ${e.message}");
+  //   }
+  //   debugPrint('getContract  end <<<<<<');
+  // }
+
+  // Future<void> getContract() async {
+  //   debugPrint('getContract  start >>>>>');
+  //   setloadingState(LoadState.loading);
+
+  //   _contracts.clear();
+  //   final ref = FirebaseFirestore.instance
+  //       .collection('contractor')
+  //       // .orderBy('name')
+  //       .withConverter<Contract>(
+  //         fromFirestore: Contract.fromFirestore,
+  //         toFirestore: (Contract contract, _) => contract.toFirestore(),
+  //       );
+  //   await ref.get().then((((QuerySnapshot querySnapshot) {
+  //     querySnapshot.docs.forEach((doc) {
+  //       // Map<String,dynamic>? data = doc.data();
+  //       // customObjects: List<CustomObject>.from(doc.data["custom_objects"].map((item) {
+  //       //   return new CustomObject(
+  //       //     title: item["title"] ?? '',
+  //       //       );
+  //       //     },
+  //       //   ),
+  //       // ) ?? [],
+  //       debugPrint('querySnapshot.docs.forEach');
+  //       debugPrint('id ${doc['id']} ');
+  //       debugPrint('Name ${doc['name']} ');
+  //       Contract contract = Contract(
+  //         id: doc['id'],
+  //         name: doc['name'],
+  //         address: doc['address'],
+  //         tel: doc['tel'],
+  //         // parkingLot: doc['parkingLot'],
+  //         parkingLot: List<ParkingLot>.from(doc['parkingLot']),
+  //         // parkingLot: List<ParkingLot>.from(doc['parkingLot']
+  //         //         .map(
+  //         //           (value) => ParkingLot(
+  //         //             id: value['id'],
+  //         //             used: value['used'],
+  //         //             carNo: value['carNo'],
+  //         //             carName: value['carName'],
+  //         //             carOwner: value['carOwner'],
+  //         //             lotNo: value['lotNo'],
+  //         //             // contractDate: value?['contractDate'] == null
+  //         //             //     ? value['contractDate'].toDate()
+  //         //             //     : value?['createdAt'].toDate(),
+  //         //             // cancelDate: value?['cancelDate'] == null
+  //         //             //     ? value['cancelDate'].toDate()
+  //         //             //     : value?['createdAt'].toDate(),
+  //         //             contractDate: DateTime.now(),
+  //         //             cancelDate: DateTime.now(),
+  //         //             contractType: value?['contractType'],
+  //         //             // createdAt: value?['createdAt'].toDate(),
+  //         //             // updatedAt: value?['updatedAt'].toDate(),
+  //         //             createdAt: DateTime.now(),
+  //         //             updatedAt: DateTime.now(),
+  //         //           ),
+  //         //         )
+  //         //         .toList() ??
+  //         //     []),
+  //         // parkingLot: [
+  //         //   ParkingLot(
+  //         //       id: doc['parkingLot'][0]['id'],
+  //         //       used: doc['parkingLot'][0]['used'],
+  //         //       carNo: doc['parkingLot'][0]['carNo'],
+  //         //       carName: doc['parkingLot'][0]['carName'],
+  //         //       carOwner: doc['parkingLot'][0]['carOwner'],
+  //         //       lotNo: doc['parkingLot'][0]['lotNo'],
+  //         //       contractDate: doc['parkingLot'][0]['contractDate'].toDate(),
+  //         //       cancelDate: doc['parkingLot'][0]['cancelDate'].toDate(),
+  //         //       contractType: doc['parkingLot'][0]['contractType'],
+  //         //       createdAt: doc['parkingLot'][0]['createdAt'].toDate(),
+  //         //       updatedAt: doc['parkingLot'][0]['updatedAt'].toDate())
+  //         // ],
+  //         createdAt: doc['createdAt'].toDate(),
+  //         updatedAt: doc['updateAt'].toDate(),
+  //       );
+  //       _contracts.add(contract);
+  //       debugPrint('contract length ${_contracts.length.toString()}');
+  //       _contracts.map((value) =>
+  //           debugPrint('contract: ${value.parkingLot![0].carOwner}'));
+  //       debugPrint('contract---->');
+  //     });
+  //   }))).catchError((error) => debugPrint("Failed to get contract: $error"));
+  //   // await ref
+  //   //     .get()
+  //   //     .then(
+  //   //         ((QuerySnapshot querySnapshot) => querySnapshot.docs.forEach((doc) {
+  //   //               debugPrint('querySnapshot.docs.forEach');
+  //   //               debugPrint('id ${doc['id']} ');
+  //   //               debugPrint('Name ${doc['name']} ');
+  //   //               debugPrint('carOwner ${doc['parkingLot'][0]['carOwner']} ');
+  //   //               doc['parkingLot'].map((value) {
+  //   //                 debugPrint('carOwner ${value} ');
+  //   //                 // debugPrint('carOwner ${value['carOwner']} ');
+  //   //               });
+  //   //             })))
+  //   //     .catchError((error) => debugPrint("Failed to get contract: $error"));
+  //   // await ref
+  //   //     .get()
+  //   //     .then((QuerySnapshot querySnapshot) => {
+  //   //           querySnapshot.docs.forEach((doc) {
+  //   //             debugPrint('id ${doc['id']} ');
+  //   //             debugPrint('Name ${doc['name']} ');
+  //   //             debugPrint('address ${doc['address']} ');
+  //   //             debugPrint('tel ${doc['tel']} ');
+  //   //             debugPrint('createdAT ${doc['createdAT']} ');
+  //   //             debugPrint('updateAT ${doc['updatedAT']} ');
+  //   // List<dynamic> userList =
+  //   //     doc['parkingLot'].map((value) {
+  //   //   return ParkingLot(
+  //   //     id: value?['id'],
+  //   //     used: value?['used'],
+  //   //     carNo: value?['carNo'],
+  //   //     carName: value?['carName'],
+  //   //     carOwner: value?['carOwner'],
+  //   //     lotNo: value?['lotNo'],
+  //   //     // contractDate: value?['contractDate'] == null
+  //   //     //     ? value['contractDate'].toDate()
+  //   //     //     : value?['createdAt'].toDate(),
+  //   //     // cancelDate: value?['cancelDate'] == null
+  //   //     //     ? value['cancelDate'].toDate()
+  //   //     //     : value?['createdAt'].toDate(),
+  //   //     contractDate: DateTime.now(),
+  //   //     cancelDate: DateTime.now(),
+  //   //     contractType: value?['contractType'],
+  //   //     // createdAt: value?['createdAt'].toDate(),
+  //   //     // updatedAt: value?['updatedAt'].toDate(),
+  //   //     createdAt: DateTime.now(),
+  //   //     updatedAt: DateTime.now(),
+  //   //   );
+  //   // }).toList();
+
+  //   // Contract contract = Contract(
+  //   //   id: doc['id'],
+  //   //   name: doc['name'],
+  //   //   address: doc['address'],
+  //   //   tel: doc['tel'],
+  //   //   parkingLot: List<ParkingLot>.from(doc['parkingLot']
+  //   //       .map(
+  //   //         (value) =>
+  //   //             ParkingLot(
+  //   //           id: value?['id'],
+  //   //           used: value?['used'],
+  //   //           carNo: value?['carNo'],
+  //   //           carName: value?['carName'],
+  //   //           carOwner: value?['carOwner'],
+  //   //           lotNo: value?['lotNo'],
+  //   //           // contractDate: value?['contractDate'] == null
+  //   //           //     ? value['contractDate'].toDate()
+  //   //           //     : value?['createdAt'].toDate(),
+  //   //           // cancelDate: value?['cancelDate'] == null
+  //   //           //     ? value['cancelDate'].toDate()
+  //   //           //     : value?['createdAt'].toDate(),
+  //   //           contractDate: DateTime.now(),
+  //   //           cancelDate: DateTime.now(),
+  //   //           contractType: value?['contractType'],
+  //   //           // createdAt: value?['createdAt'].toDate(),
+  //   //           // updatedAt: value?['updatedAt'].toDate(),
+  //   //           createdAt: DateTime.now(),
+  //   //           updatedAt: DateTime.now(),
+  //   //         ),
+  //   //       )
+  //   //       .toList()),
+  //   //   // parkingLot: ParkingLot(
+  //   //   //     id: doc['parkingLot.id'],
+  //   //   //     used: doc['parkingLot.id'],
+  //   //   //     carNo: doc['parkingLot.id'],
+  //   //   //     carName: doc['parkingLot.id'],
+  //   //   //     carOwner: doc['parkingLot.id'],
+  //   //   //     lotNo: doc['parkingLot.id'],
+  //   //   //     contractDate: doc['parkingLot.id'],
+  //   //   //     cancelDate: doc['parkingLot.id'],
+  //   //   //     contractType: doc['parkingLot.id'],
+  //   //   //     createdAt: doc['parkingLot.id'],
+  //   //   //     updatedAt: doc['parkingLot.id']),
+
+  //   //   createdAt: doc['createdAt'].toDate(),
+  //   //   updatedAt: doc['updateAt'].toDate(),
+  //   // );
+  //   // _contracts.add(contract);
+  //   //       })
+  //   //     })
+  //   // .catchError((error) => debugPrint("Failed to get contract: $error"));
+
+  //   setloadingState(LoadState.waiting);
+  //   debugPrint('getContract end <<<<');
+  //   notifyListeners();
+  // }
+
+  // 駐車場区画情報をすべて取得
   Future<void> getParking() async {
-    debugPrint('getParking()----start');
+    debugPrint('getParking()----start!!!');
     //ローディング画面表示
     setloadingState(LoadState.loading);
 
-    debugPrint('setloadingState start : $_loadingState');
+    // debugPrint('setloadingState start : $_loadingState');
     _parking.clear();
     // _parking = <Parking>[
     //   Parking(
@@ -156,6 +584,7 @@ class ApplicationState extends ChangeNotifier {
     //   setlaodingState(LoadState.waiting);
     // }).catchError((error) => debugPrint("Failed to get parking: $error"));
     //カスタムオオブジェクト
+
     final ref = FirebaseFirestore.instance
         .collection('parking')
         // .orderBy('id', descending: true)
@@ -168,8 +597,8 @@ class ApplicationState extends ChangeNotifier {
         .get()
         .then((QuerySnapshot querySnapshot) => {
               querySnapshot.docs.forEach((doc) {
-                debugPrint(
-                    'lotNo ${doc['lotNo']} contractor:${doc['contractor']}');
+                // debugPrint(
+                //     'lotNo ${doc['lotNo']} contractor:${doc['contractor']}');
                 Parking parkingDoc = Parking(
                   id: doc['id'] as String,
                   used: doc['used'] as bool,
@@ -185,7 +614,10 @@ class ApplicationState extends ChangeNotifier {
                 _parking.add(parkingDoc);
               })
             })
-        .catchError((error) => debugPrint("Failed to parking: $error"));
+        .catchError((error) {
+      debugPrint("Failed to parking: $error");
+      setloadingState(LoadState.waiting);
+    });
     notifyListeners();
     setloadingState(LoadState.waiting);
     debugPrint('getParking()----end');
@@ -387,5 +819,36 @@ class ApplicationState extends ChangeNotifier {
     } on FirebaseException catch (e) {
       debugPrint('firebase Firestore initialSetParking add Error: $e');
     }
+  }
+
+  ///----
+  ///aut
+  ///----
+  Future<void> signInWithEmailAndPassword(
+    String email,
+    String password,
+    void Function(FirebaseAuthException e) errorCallback, //_showErrorDialogs
+  ) async {
+    debugPrint('sign In-------');
+    try {
+      print('signInWithEmailAndPassword');
+      print('email:$email');
+      print('password:$password');
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      _loginState = LoginState.loggedIn;
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      errorCallback(e);
+      print('firebase auhentication error!');
+      print('createUserWithEmailPassword Error:$e');
+    }
+  }
+
+  void signOut() {
+    debugPrint('sign out-------');
+    FirebaseAuth.instance.signOut();
+    _loginState = LoginState.loggedOut;
+    notifyListeners();
   }
 }
