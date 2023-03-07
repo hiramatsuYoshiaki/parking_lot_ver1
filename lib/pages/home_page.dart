@@ -58,14 +58,14 @@ class HomePage extends StatelessWidget {
                                         .pushNamed('/parking_lot_list');
                                   },
                                   child: const Text('parking lot list'))),
-                          Container(
-                              padding: const EdgeInsets.only(bottom: 24),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pushNamed('/contractor');
-                                  },
-                                  child: const Text('contractor'))),
+                          // Container(
+                          //     padding: const EdgeInsets.only(bottom: 24),
+                          //     child: ElevatedButton(
+                          //         onPressed: () {
+                          //           Navigator.of(context)
+                          //               .pushNamed('/contractor');
+                          //         },
+                          //         child: const Text('contractor'))),
                           Container(
                               padding: const EdgeInsets.only(bottom: 24),
                               child: ElevatedButton(

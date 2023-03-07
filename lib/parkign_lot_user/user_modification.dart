@@ -160,15 +160,15 @@ class _UserModificationFormState extends State<UserModificationForm> {
                   FloatingActionButton.extended(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        print('modification User');
-                        print(widget.selectedParking.id);
-                        print(widget.selectedParking.used ? 'true' : 'false');
-                        print(widget.selectedParking.contractor);
-                        print(widget.selectedParking.contractorId);
-                        print(widget.selectedParking.carNo);
-                        print(widget.selectedParking.carName);
-                        print(widget.selectedParking.carOwner);
-                        print(widget.selectedParking.lotNo);
+                        // print('modification User');
+                        // print(widget.selectedParking.id);
+                        // print(widget.selectedParking.used ? 'true' : 'false');
+                        // print(widget.selectedParking.contractor);
+                        // print(widget.selectedParking.contractorId);
+                        // print(widget.selectedParking.carNo);
+                        // print(widget.selectedParking.carName);
+                        // print(widget.selectedParking.carOwner);
+                        // print(widget.selectedParking.lotNo);
 
                         widget.updateParking(Parking(
                           id: widget.selectedParking.id,
@@ -197,7 +197,8 @@ class _UserModificationFormState extends State<UserModificationForm> {
             TextButton(
               child: const Text('キャンセル'),
               onPressed: () {
-                Navigator.of(context).pushNamed('/parking_lot_list');
+                // Navigator.of(context).pushNamed('/parking_lot_list');
+                Navigator.of(context).pop();
               },
             ),
             const SizedBox(height: 16),

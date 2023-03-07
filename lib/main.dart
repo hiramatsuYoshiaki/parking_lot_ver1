@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'application_state.dart';
 import 'pages/arrangement.dart';
 import 'pages/auth.dart';
-import 'pages/contractor.dart';
+// import 'pages/contractor.dart';
 import 'pages/contractor_list.dart';
 import 'pages/home_page.dart';
 import 'pages/logout.dart';
@@ -80,13 +80,13 @@ class MyApp extends StatelessWidget {
             )),
         //契約者
         // '/contractor': (context) => const Contractor(),
-        '/contractor': ((context) => Consumer<ApplicationState>(
-              builder: ((context, appState, _) => AuthGuard(
-                    loginState: appState.loginState,
-                    guard: const Auth(),
-                    child: const Contractor(),
-                  )),
-            )),
+        // '/contractor': ((context) => Consumer<ApplicationState>(
+        //       builder: ((context, appState, _) => AuthGuard(
+        //             loginState: appState.loginState,
+        //             guard: const Auth(),
+        //             child: const Contractor(),
+        //           )),
+        //     )),
         //
         '/login': (context) => const Auth(), //ログイン
         '/logout': (context) => const Logout(), //ログアウト

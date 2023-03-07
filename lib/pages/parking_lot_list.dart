@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../application_state.dart';
+import '../model/contractor.dart';
 import '../model/status.dart';
+import '../ui/app_bar_bottom.dart';
 
 class ParkingLotList extends StatefulWidget {
   const ParkingLotList({Key? key}) : super(key: key);
@@ -37,9 +39,16 @@ class _ParkingLotListState extends State<ParkingLotList> {
   // ];
   @override
   Widget build(BuildContext context) {
-    print('parking_lot_list');
     return Scaffold(
       appBar: AppBar(title: const Text('Parkign Lot List')),
+      bottomNavigationBar: Consumer<ApplicationState>(
+        builder: (BuildContext context, appState, _) => AppBarBottom(
+            // homeState: appState.homeState,
+            // setHomeState: appState.setHomeState,
+            // activityState: appState.activityState,
+            // setActivityState: appState.setActivityState,
+            ),
+      ),
       body: Consumer<ApplicationState>(
           builder: (BuildContext context, appState, _) {
         return appState.loadingState == LoadState.waiting
@@ -54,55 +63,72 @@ class _ParkingLotListState extends State<ParkingLotList> {
                           ? Colors.green[200]
                           : Colors.grey[200],
                       child: appState.parking[index].used
-                          ? Wrap(children: <Widget>[
-                              Text(appState.parking[index].lotNo.toString()),
-                              const SizedBox(width: 10),
-                              Text(appState.parking[index].contractor),
-                              const SizedBox(width: 10),
-                              Text(appState.parking[index].carNo),
-                              const SizedBox(width: 10),
-                              Text(appState.parking[index].carName),
-                              const SizedBox(width: 10),
-                              TextButton(
-                                child: const Text('詳細'),
-                                onPressed: () {
-                                  appState.setSelectedParking(
-                                      appState.parking[index]);
-                                  appState.setParkingLotUserState(
-                                      ParkingLotUserState.display);
-                                  Navigator.of(context)
-                                      .pushNamed('/parking_lot_user');
-                                  // widget.setSelectedActivity(
-                                  //     widget.selectedActivity,
-                                  //     ActivityState.activityDetail);
-                                },
-                              ),
-                              TextButton(
-                                child: const Text('修正'),
-                                onPressed: () {
-                                  appState.setSelectedParking(
-                                      appState.parking[index]);
-                                  appState.setParkingLotUserState(
-                                      ParkingLotUserState.modification);
-                                  Navigator.of(context)
-                                      .pushNamed('/parking_lot_user');
-                                  // widget.setSelectedActivity(
-                                  //     widget.selectedActivity,
-                                  //     ActivityState.activityDetail);
-                                },
-                              ),
-                              TextButton(
-                                child: const Text('解約'),
-                                onPressed: () {
-                                  appState.setSelectedParking(
-                                      appState.parking[index]);
-                                  appState.setParkingLotUserState(
-                                      ParkingLotUserState.cancel);
-                                  Navigator.of(context)
-                                      .pushNamed('/parking_lot_user');
-                                },
-                              ),
-                            ])
+                          ? Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 8,
+                              children: <Widget>[
+                                  Text(appState.parking[index].lotNo.toString(),
+                                      style: const TextStyle(fontSize: 24)),
+                                  // const SizedBox(width: 10),
+                                  Text(appState.parking[index].contractor),
+                                  // const SizedBox(width: 10),
+                                  Text(appState.parking[index].carNo),
+                                  // const SizedBox(width: 10),
+                                  Text(appState.parking[index].carName),
+                                  // const SizedBox(width: 10),
+                                  TextButton(
+                                    child: const Text('詳細'),
+                                    onPressed: () {
+                                      //選択した駐車場区画情報をステートに保持
+                                      appState.setSelectedParking(
+                                          appState.parking[index]);
+                                      //選択した契約者情報をステートに保持
+                                      appState.setParkingLotUserState(
+                                          ParkingLotUserState.display);
+                                      //選択した契約者情報をステートに保持
+                                      Contract selectedContract = appState
+                                          .contracts
+                                          .firstWhere((element) =>
+                                              element.id ==
+                                              appState
+                                                  .parking[index].contractorId);
+                                      appState.setSelectedContract(
+                                          selectedContract);
+                                      ParkingLot selectedParlingLot =
+                                          selectedContract.parkingLot!
+                                              .firstWhere((element) =>
+                                                  appState
+                                                      .parking[index].lotNo ==
+                                                  element.lotNo);
+                                      appState.setSelectedParkingLot(
+                                          selectedParlingLot);
+                                      Navigator.of(context)
+                                          .pushNamed('/parking_lot_user');
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('修正'),
+                                    onPressed: () {
+                                      appState.setSelectedParking(
+                                          appState.parking[index]);
+                                      appState.setParkingLotUserState(
+                                          ParkingLotUserState.modification);
+                                      Navigator.of(context)
+                                          .pushNamed('/parking_lot_user');
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('解約'),
+                                    onPressed: () {
+                                      appState.setSelectedParking(
+                                          appState.parking[index]);
+                                      appState.setParkingLotUserState(
+                                          ParkingLotUserState.cancel);
+                                      Navigator.of(context)
+                                          .pushNamed('/parking_lot_user');
+                                    },
+                                  ),
+                                ])
                           : Wrap(children: <Widget>[
                               Text(appState.parking[index].lotNo.toString()),
                               const SizedBox(width: 10),
@@ -117,6 +143,7 @@ class _ParkingLotListState extends State<ParkingLotList> {
                                 onPressed: () {
                                   print('push button add');
                                   //ステータス add,modification,cansel,display,replace,list
+                                  //add
                                   appState.setParkingLotUserState(
                                       ParkingLotUserState.add);
                                   //駐車場区画の情報

@@ -91,7 +91,7 @@ class ApplicationState extends ChangeNotifier {
   }
 
   //契約者情報
-  late final List<Contract> _contracts = <Contract>[];
+  final List<Contract> _contracts = <Contract>[];
   List<Contract> get contracts => _contracts;
 
   Contract _selectedContract = Contract(
@@ -104,7 +104,32 @@ class ApplicationState extends ChangeNotifier {
       updatedAt: DateTime.now());
   Contract get selectedContract => _selectedContract;
   void setSelectedContract(Contract contract) {
+    // print('setSelectedContract');
+    // print(contract.name);
     _selectedContract = contract;
+    notifyListeners();
+  }
+
+  final List<ParkingLot> _parkingLot = <ParkingLot>[];
+  List<ParkingLot> get parkingLot => _parkingLot;
+
+  ParkingLot _selectedParkingLot = ParkingLot(
+    id: '',
+    used: false,
+    carNo: '',
+    carName: '',
+    carOwner: '',
+    lotNo: 0,
+    contractDate: DateTime.now(),
+    cancelDate: null,
+    contractType: '',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
+  ParkingLot get selectedParkingLot => _selectedParkingLot;
+  void setSelectedParkingLot(ParkingLot parkingLot) {
+    print('setSelectedParkingLot');
+    _selectedParkingLot = parkingLot;
     notifyListeners();
   }
 
@@ -127,14 +152,16 @@ class ApplicationState extends ChangeNotifier {
         print('userChanges logged in');
         _currentUser = user;
         getParking();
+        getContract();
         // setloadingState(LoadState.waiting);
         notifyListeners();
         print('userChanges logged in');
         print(user.uid);
         print(user.email);
-        print(user.displayName);
-        print(user.emailVerified);
-        print('photoURL: ${user.photoURL}');
+        // print(user.displayName);
+        // print(user.emailVerified);
+        // print('photoURL: ${user.photoURL}');
+        _loginState = LoginState.loggedIn;
       } else {
         _loginState = LoginState.loggedOut;
         _currentUser = null;
@@ -182,70 +209,73 @@ class ApplicationState extends ChangeNotifier {
           fromFirestore: Contract.fromFirestore,
           toFirestore: (Contract contract, _) => contract.toFirestore(),
         );
-    debugPrint('getContract()----ref.get');
     await ref
         .get()
         .then((QuerySnapshot querySnapshot) => {
               querySnapshot.docs.forEach((doc) {
-                debugPrint('id ${doc['id']} ');
-                debugPrint('name ${doc['name']} ');
+                debugPrint('get contract ******************');
+                debugPrint('get contract id---> ${doc['id']} ');
+                debugPrint('get contract name----> ${doc['name']} ');
                 //parkingLot
-                debugPrint(doc['parkingLot'][0]?['lotNo'].toString());
-                debugPrint(doc['parkingLot'][0]?['id'].toString());
-                debugPrint(doc['parkingLot'][0]?['carOwner'].toString());
+                // debugPrint(doc['parkingLot'][0]?['lotNo'].toString());
+                // debugPrint(doc['parkingLot'][0]?['id'].toString());
+                // debugPrint(doc['parkingLot'][0]?['carOwner'].toString());
                 // debugPrint(doc['parkingLot'].longth.toString());
                 // List<Map<String, dynamic>> lots =
                 //     List<Map<String, dynamic>>.from(doc['parkingLot']);
 
                 // List<ParkingLot> parkingLotList = List<ParkingLot>.from(lots);
 
-                doc['parkingLot'].forEach((value) {
-                  debugPrint('parkingLot list forEach ');
-                  debugPrint('lotNo ${value['lotNo']} ');
-                  debugPrint('id ${value['id']} ');
-                  debugPrint('carOwner ${value['carOwner']} ');
-                  //
-                  Contract contract = Contract(
-                    id: doc['id'],
-                    name: doc['name'],
-                    address: doc['address'],
-                    tel: doc['tel'],
-                    // parkingLot: [],
-                    // parkingLot: List<ParkingLot>.from(doc['parkingLot']),
-                    parkingLot: List<ParkingLot>.from(doc['parkingLot']
-                        .map(
-                          (value) => ParkingLot(
-                            id: value['id'],
-                            used: value['used'],
-                            carNo: value['carNo'],
-                            carName: value['carName'],
-                            carOwner: value['carOwner'],
-                            lotNo: value['lotNo'],
-                            // contractDate: value?['contractDate'] == null
-                            //     ? value['contractDate'].toDate()
-                            //     : value?['createdAt'].toDate(),
-                            // cancelDate: value?['cancelDate'] == null
-                            //     ? value['cancelDate'].toDate()
-                            //     : value?['createdAt'].toDate(),
-                            // contractDate: DateTime.now(),
-                            contractDate: value['contractDate'].toDate(),
-                            // cancelDate: DateTime.now(),
-                            cancelDate: value['cancelDate'].toDate(),
-                            contractType: value['contractType'],
-                            // createdAt: value?['createdAt'].toDate(),
-                            // updatedAt: value?['updatedAt'].toDate(),
-                            // createdAt: DateTime.now(),
-                            createdAt: value['createdAt'].toDate(),
-                            // updatedAt: DateTime.now(),
-                            updatedAt: value?['updatedAt'].toDate(),
-                          ),
-                        )
-                        .toList()),
-                    createdAt: doc['createdAt'].toDate(),
-                    updatedAt: doc['updatedAt'].toDate(),
-                  );
-                  _contracts.add(contract);
-                });
+                // doc['parkingLot'].forEach((value) {
+                //   debugPrint('parkingLot list forEach ');
+                //   debugPrint('lotNo ${value['lotNo']} ');
+                //   debugPrint('id ${value['id']} ');
+                //   debugPrint('carOwner ${value['carOwner']} ');
+                //   });
+                //
+                Contract contract = Contract(
+                  id: doc['id'],
+                  name: doc['name'],
+                  address: doc['address'],
+                  tel: doc['tel'],
+                  // parkingLot: [],
+                  // parkingLot: List<ParkingLot>.from(doc['parkingLot']),
+                  parkingLot: List<ParkingLot>.from(doc['parkingLot']
+                      .map(
+                        (value) => ParkingLot(
+                          id: value['id'],
+                          used: value['used'],
+                          carNo: value['carNo'],
+                          carName: value['carName'],
+                          carOwner: value['carOwner'],
+                          lotNo: value['lotNo'],
+                          // contractDate: value?['contractDate'] == null
+                          //     ? value['contractDate'].toDate()
+                          //     : value?['createdAt'].toDate(),
+                          // cancelDate: value?['cancelDate'] == null
+                          //     ? value['cancelDate'].toDate()
+                          //     : value?['createdAt'].toDate(),
+                          // contractDate: DateTime.now(),
+                          contractDate: value['contractDate'].toDate(),
+                          // cancelDate: DateTime.now(),
+                          cancelDate: value['cancelDate'] == null
+                              ? null
+                              : value['cancelDate'].toDate(),
+                          contractType: value['contractType'],
+                          // createdAt: value?['createdAt'].toDate(),
+                          // updatedAt: value?['updatedAt'].toDate(),
+                          // createdAt: DateTime.now(),
+                          createdAt: value['createdAt'].toDate(),
+                          // updatedAt: DateTime.now(),
+                          updatedAt: value?['updatedAt'].toDate(),
+                        ),
+                      )
+                      .toList()),
+                  createdAt: doc['createdAt'].toDate(),
+                  updatedAt: doc['updatedAt'].toDate(),
+                );
+                _contracts.add(contract);
+
                 // doc['parkingLot'].map((value) {
                 //   debugPrint('parkingLot list map ');
                 //   debugPrint('lotNo ${value['lotNo']} ');
@@ -650,6 +680,196 @@ class ApplicationState extends ChangeNotifier {
     }
   }
 
+  Future<void> updateCancelDate(Contract contract) async {
+    debugPrint('updateContract!!!!!!!!!!!!!!!!!');
+    debugPrint('contract.id : ${contract.id}');
+    //ローディング画面表示
+    setloadingState(LoadState.loading);
+    // List<ParkingLot> data = contract.parkingLot!
+    //     .map((value) => {
+    //           ParkingLot(
+    //             id: value.id,
+    //             used: value.used,
+    //             carNo: value.carNo,
+    //             carName: value.carName,
+    //             carOwner: value.carOwner,
+    //             lotNo: value.lotNo,
+    //             contractDate: value.contractDate,
+    //             cancelDate: value.cancelDate,
+    //             contractType: value.contractType,
+    //             createdAt: value.createdAt,
+    //             updatedAt: value.updatedAt,
+    //           ),
+    //         })
+    //     .cast<ParkingLot>()
+    //     .toList();
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('contractor')
+          .doc(contract.id)
+          .update({
+        // "parkingLot":
+        // List<ParkingLot>.from(contract.parkingLot as List<ParkingLot>),
+        // "parkingLot": contract.parkingLot,
+        // "parkingLot":
+        //     List<ParkingLot>.from(contract.parkingLot as List<ParkingLot>),
+        // "parkingLot": contract.parkingLot!
+        //     .map((value) => {
+        //           ParkingLot(
+        //             id: value.id,
+        //             used: value.used,
+        //             carNo: value.carNo,
+        //             carName: value.carName,
+        //             carOwner: value.carOwner,
+        //             lotNo: value.lotNo,
+        //             contractDate: value.contractDate,
+        //             cancelDate: value.cancelDate,
+        //             contractType: value.contractType,
+        //             createdAt: value.createdAt,
+        //             updatedAt: value.updatedAt,
+        //           ),
+        //         })
+        //     .toList(),
+
+        //型を付けない 配列で更新
+        if (contract.parkingLot != null)
+          'parkingLot': contract.parkingLot!
+              .map((lot) => {
+                    'id': lot.id,
+                    'used': lot.used,
+                    'carNo': lot.carNo,
+                    'carName': lot.carName,
+                    'carOwner': lot.carOwner,
+                    'lotNo': lot.lotNo,
+                    'contractDate': lot.contractDate,
+                    'cancelDate': lot.cancelDate,
+                    'contractType': lot.contractType,
+                    'createdAt': lot.createdAt,
+                    'updatedAt': lot.updatedAt,
+                  })
+              .toList(),
+        // "updatedAt": contract.updatedAt,
+        "updatedAt": DateTime.now(),
+      });
+      getContract();
+      notifyListeners();
+      setloadingState(LoadState.waiting);
+      debugPrint('updateCancelDate---------------------> Ok');
+    } on FirebaseException catch (e) {
+      debugPrint('firebase Firestore contract updateCancelDate Erro: $e');
+    }
+  }
+
+  // Additional parking lots for existing contractors
+  Future<void> addParkingExistingContractor(
+      Parking parking, Contract contract, ParkingLot parkingLot) async {
+    debugPrint('addParkingExistingContractor');
+    setloadingState(LoadState.loading);
+    try {
+      debugPrint('contracter: ${contract.name} ---> contractor update start!');
+      debugPrint('contracter id: ${contract.id} ---> parking update start!');
+      debugPrint('parkingLot length: ${contract.parkingLot!.length} ');
+      //--------------
+      // Contractorをすべて更新場合
+      // await FirebaseFirestore.instance.collection("contractor").doc(contract.id)
+      //     .set({
+      //   'id': contract.id,
+      //   'name': contract.name,
+      //   'address': contract.address,
+      //   'tel': contract.tel,
+      //   if (contract.parkingLot != null)
+      //     'parkingLot': contract.parkingLot!
+      //         .map((lot) => {
+      //               'id': lot.id,
+      //               'used': lot.used,
+      //               'carNo': lot.carNo,
+      //               'carName': lot.carName,
+      //               'carOwner': lot.carOwner,
+      //               'lotNo': lot.lotNo,
+      //               'contractDate': lot.contractDate,
+      //               'cancelDate': lot.cancelDate,
+      //               'contractType': lot.contractType,
+      //               'createdAt': lot.createdAt,
+      //               'updatedAt': lot.updatedAt,
+      //             })
+      //         .toList(),
+      //   'createdAt': contract.createdAt,
+      //   'updatedAt': contract.updatedAt,
+      // });
+      //--------------
+      // ParkingLot配列に追加する場合
+      await FirebaseFirestore.instance
+          .collection("contractor")
+          .doc(contract.id)
+          .update({
+        "parkingLot": FieldValue.arrayUnion([
+          {
+            'id': parkingLot.id,
+            'used': parkingLot.used,
+            'carNo': parkingLot.carNo,
+            'carName': parkingLot.carName,
+            'carOwner': parkingLot.carOwner,
+            'lotNo': parkingLot.lotNo,
+            'contractDate': parkingLot.contractDate,
+            'cancelDate': parkingLot.cancelDate,
+            'contractType': parkingLot.contractType,
+            'createdAt': parkingLot.createdAt,
+            'updatedAt': parkingLot.updatedAt,
+          }
+        ]),
+        "updatedAt": DateTime.now(),
+      });
+      // await FirebaseFirestore.instance
+      //     .collection("constracor")
+      //     .doc(contract.id)
+      //     .withConverter(
+      //       fromFirestore: Contract.fromFirestore,
+      //       toFirestore: (Contract docContractor, options) =>
+      //           docContractor.toFirestore(),
+      //     )
+      //     .update({
+      //   "parkingLot": contract.parkingLot as ParkingLot,
+      //   "updatedAt": DateTime.now(),
+      // });
+
+      // await FirebaseFirestore.instance
+      //     .collection("constracor")
+      //     .doc(contract.id)
+      //     .withConverter(
+      //       fromFirestore: Contract.fromFirestore,
+      //       toFirestore: (Contract docContractor, options) =>
+      //           docContractor.toFirestore(),
+      //     )
+      //     .update({
+      //   "parkingLot": contract.parkingLot as ParkingLot,
+      //   "updatedAt": DateTime.now(),
+      // });
+      debugPrint('contract id : ${contract.id} contract update ok!!!!!!');
+      debugPrint('lot no : ${parking.lotNo} ---> parking update start!');
+      await FirebaseFirestore.instance
+          .collection("parking")
+          .doc(parking.id)
+          .update({
+        "used": parking.used,
+        "contractor": parking.contractor,
+        "carNo": parking.carNo,
+        "carName": parking.carName,
+        "carOwner": parking.carOwner,
+        "contractorId": contract.id,
+        "updatedAt": DateTime.now(),
+      });
+      debugPrint('lot no : ${parking.lotNo} ---> parking update ok!!!!!!');
+      getParking();
+      getContract();
+      notifyListeners();
+      setloadingState(LoadState.waiting);
+    } on FirebaseException catch (e) {
+      debugPrint('Firestore addParkingExistingContractor update Error: $e');
+    }
+  }
+
+  // Additional parking lots for new contractors
   Future<void> addParking(Parking parking, Contract contract) async {
     debugPrint('addParking()----start');
     setloadingState(LoadState.loading);
@@ -672,32 +892,37 @@ class ApplicationState extends ChangeNotifier {
                 docContractor.toFirestore(),
           )
           .add(docContractor)
-          .then((documentSnapshot) => {
+          .then((documentSnapshot) async => {
                 debugPrint("Added Data with ID: ${documentSnapshot.id}"),
-                FirebaseFirestore.instance
+                await FirebaseFirestore.instance
                     .collection("contractor")
                     .doc(documentSnapshot.id)
                     .update({
                   "id": documentSnapshot.id,
+                }),
+                //parking update------
+                await FirebaseFirestore.instance
+                    .collection("parking")
+                    .doc(parking.id)
+                    // .withConverter(
+                    //   fromFirestore: Activities.fromFirestore,
+                    //   toFirestore: (Activities docData, options) => docData.toFirestore(),
+                    // )
+                    // .update({"plan.done": true,"actual.rideURL":RideLinkURL});
+                    .update({
+                  "used": parking.used,
+                  "contractor": parking.contractor,
+                  "carNo": parking.carNo,
+                  "carName": parking.carName,
+                  "carOwner": parking.carOwner,
+                  "contractorId": documentSnapshot.id,
+                  "updatedAt": DateTime.now(),
                 })
               });
-      //parking update------
-      await FirebaseFirestore.instance.collection("parking").doc(parking.id)
-          // .withConverter(
-          //   fromFirestore: Activities.fromFirestore,
-          //   toFirestore: (Activities docData, options) => docData.toFirestore(),
-          // )
-          // .update({"plan.done": true,"actual.rideURL":RideLinkURL});
-          .update({
-        "used": parking.used,
-        "contractor": parking.contractor,
-        "carNo": parking.carNo,
-        "carName": parking.carName,
-        "carOwner": parking.carOwner,
-        "updatedAt": DateTime.now(),
-      });
+
       debugPrint('lot no : ${parking.lotNo} ---> parking update ok!');
       getParking();
+      getContract();
       notifyListeners();
       setloadingState(LoadState.waiting);
     } on FirebaseException catch (e) {
@@ -831,9 +1056,6 @@ class ApplicationState extends ChangeNotifier {
   ) async {
     debugPrint('sign In-------');
     try {
-      print('signInWithEmailAndPassword');
-      print('email:$email');
-      print('password:$password');
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       _loginState = LoginState.loggedIn;

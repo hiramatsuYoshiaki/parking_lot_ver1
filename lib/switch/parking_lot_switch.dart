@@ -18,6 +18,7 @@ class ParkingLotSwitch extends StatelessWidget {
     // 契約者リストから選択userList,
     // 区画変更userReplace,
     // 修正userModification,
+    print('ParkingLotSwitch');
     switch (state) {
       case ParkingLotUserState.display:
         return UserDisplay();

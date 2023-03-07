@@ -15,7 +15,7 @@ class AuthGuard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(LoginState.loggedIn);
+    // print(LoginState.loggedIn);
     if (loginState == LoginState.loggedIn) {
       return child;
     }

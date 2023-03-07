@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import '../application_state.dart';
 import '../component/loading_screen.dart';
 import '../model/status.dart';
+import '../ui/app_bar_bottom.dart';
 
 class UserDisplay extends StatelessWidget {
   const UserDisplay({Key? key}) : super(key: key);
@@ -12,6 +14,14 @@ class UserDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text('User Dispaly')),
+        bottomNavigationBar: Consumer<ApplicationState>(
+          builder: (BuildContext context, appState, _) => AppBarBottom(
+              // homeState: appState.homeState,
+              // setHomeState: appState.setHomeState,
+              // activityState: appState.activityState,
+              // setActivityState: appState.setActivityState,
+              ),
+        ),
         body: SingleChildScrollView(
             child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1200),
@@ -25,18 +35,129 @@ class UserDisplay extends StatelessWidget {
                                 child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    children: [
-                                    Text('id ${appState.selectedParking.id}'),
+                                    children: <Widget>[
+                                    const SizedBox(height: 16),
+                                    Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "区画番号： ${appState.selectedParking.lotNo}",
+                                          style: const TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                    const SizedBox(height: 16),
+                                    // Text('id ${appState.selectedParking.id}'),
                                     Text(
-                                        'used ${appState.selectedParking.used ? 'true' : 'false'}'),
+                                        appState.selectedParking.used
+                                            ? '契約中'
+                                            : '解約',
+                                        style: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 16),
+                                    const Text('契約者'),
                                     Text(
-                                        '契約者 ${appState.selectedParking.contractor}'),
+                                      appState.selectedParking.contractor,
+                                      style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('車番'),
                                     Text(
-                                        '車番 ${appState.selectedParking.carNo}'),
+                                      appState.selectedParking.carNo,
+                                      style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('車種'),
                                     Text(
-                                        '車種 ${appState.selectedParking.carName}'),
+                                      appState.selectedParking.carName,
+                                      style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('所有者'),
                                     Text(
-                                        '所有者 ${appState.selectedParking.carOwner}'),
+                                      appState.selectedParking.carOwner,
+                                      style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    //契約者情報--------------------------------
+                                    const Text('契約者名'),
+                                    Text(
+                                      appState.selectedContract.name,
+                                      style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('住所住所'),
+                                    Text(
+                                      appState.selectedContract.address,
+                                      style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('電話番号'),
+                                    Text(
+                                      appState.selectedContract.tel,
+                                      style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text('契約日'),
+                                    Text(
+                                        DateFormat('yyyy年M月d日').format(appState
+                                            .selectedParkingLot.contractDate),
+                                        style: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold)),
+
+                                    const SizedBox(height: 16),
+                                    const Text('解約日'),
+                                    Text(
+                                        appState.selectedParkingLot
+                                                    .cancelDate ==
+                                                null
+                                            ? '契約中'
+                                            : DateFormat('yyyy年M月d日').format(
+                                                appState.selectedParkingLot
+                                                    .cancelDate!),
+                                        style: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 16),
+//修正---------
+                                    TextButton(
+                                      child: const Text('修正'),
+                                      onPressed: () {
+                                        appState.setSelectedParking(
+                                            appState.selectedParking);
+                                        appState.setParkingLotUserState(
+                                            ParkingLotUserState.modification);
+                                        Navigator.of(context)
+                                            .pushNamed('/parking_lot_user');
+                                      },
+                                    ),
+                                    //解約------------
+                                    TextButton(
+                                      child: const Text('解約'),
+                                      onPressed: () {
+                                        appState.setSelectedParking(
+                                            appState.selectedParking);
+                                        appState.setParkingLotUserState(
+                                            ParkingLotUserState.cancel);
+                                        Navigator.of(context)
+                                            .pushNamed('/parking_lot_user');
+                                      },
+                                    ),
                                     TextButton(
                                       child: const Text('もどる'),
                                       onPressed: () {
@@ -44,9 +165,9 @@ class UserDisplay extends StatelessWidget {
                                         //     appState.parking[index]);
                                         // appState.setParkingLotUserState(
                                         //     ParkingLotUserState.display);
-                                        // Navigator.of(context).pop();
-                                        Navigator.of(context)
-                                            .pushNamed('/parking_lot_list');
+                                        Navigator.of(context).pop();
+                                        // Navigator.of(context)
+                                        //     .pushNamed('/parking_lot_list');
                                       },
                                     ),
                                   ]))

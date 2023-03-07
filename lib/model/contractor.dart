@@ -38,7 +38,7 @@ class Contract {
       address: data?['address'],
       tel: data?['tel'],
       parkingLot: data?['parkingLot'] is Iterable
-          ? List<ParkingLot>.from(data?['parkingLot'] as List<Contract>)
+          ? List<ParkingLot>.from(data?['parkingLot'] as List<ParkingLot>)
           : null,
       // parkingLot: data?['parkingLot'].map((value) => value).toList(),
       // parkingLot: data?['parkingLot']
@@ -100,50 +100,50 @@ class Contract {
       // 'parkingLot': [parkingLot],
       // 'parkingLot': [parkingLot],
       // if (parkingLot != null) 'parkingLot': parkingLot,
-      // if (parkingLot != null)
-      //   'parkingLot': parkingLot!
-      //       .map((lot) => {
-      //             'id': lot.id,
-      //             'used': lot.used,
-      //             'carNo': lot.carNo,
-      //             'carName': lot.carName,
-      //             'carOwner': lot.carOwner,
-      //             'lotNo': lot.lotNo,
-      //             'contractDate': lot.contractDate,
-      //             'cancelDate': lot.cancelDate,
-      //             'contractType': lot.contractType,
-      //             'createdAt': lot.createdAt,
-      //             'updatedAt': lot.updatedAt,
-      //           })
-      //       .toList(),
-      'parkingLot': [
-        {
-          'id': parkingLot?[0].id,
-          'used': parkingLot?[0].used,
-          'carNo': parkingLot?[0].carNo,
-          'carName': parkingLot?[0].carName,
-          'carOwner': parkingLot?[0].carOwner,
-          'lotNo': parkingLot?[0].lotNo,
-          'contractDate': parkingLot?[0].contractDate,
-          'cancelDate': parkingLot?[0].cancelDate,
-          'contractType': parkingLot?[0].contractType,
-          'createdAt': parkingLot?[0].createdAt,
-          'updatedAt': parkingLot?[0].updatedAt,
-        },
-        // {
-        //   'id': parkingLot?[1].id,
-        //   'used': parkingLot?[1].used,
-        //   'carNo': parkingLot?[1].carNo,
-        //   'carName': parkingLot?[1].carName,
-        //   'carOwner': parkingLot?[1].carOwner,
-        //   'lotNo': parkingLot?[1].lotNo,
-        //   'contractDate': parkingLot?[1].contractDate,
-        //   'cancelDate': parkingLot?[1].cancelDate,
-        //   'contractType': parkingLot?[1].contractType,
-        //   'createdAt': parkingLot?[1].createdAt,
-        //   'updatedAt': parkingLot?[1].updatedAt,
-        // },
-      ],
+      if (parkingLot != null)
+        'parkingLot': parkingLot!
+            .map((lot) => {
+                  'id': lot.id,
+                  'used': lot.used,
+                  'carNo': lot.carNo,
+                  'carName': lot.carName,
+                  'carOwner': lot.carOwner,
+                  'lotNo': lot.lotNo,
+                  'contractDate': lot.contractDate,
+                  'cancelDate': lot.cancelDate,
+                  'contractType': lot.contractType,
+                  'createdAt': lot.createdAt,
+                  'updatedAt': lot.updatedAt,
+                })
+            .toList(),
+      // 'parkingLot': [
+      //   {
+      //     'id': parkingLot?[0].id,
+      //     'used': parkingLot?[0].used,
+      //     'carNo': parkingLot?[0].carNo,
+      //     'carName': parkingLot?[0].carName,
+      //     'carOwner': parkingLot?[0].carOwner,
+      //     'lotNo': parkingLot?[0].lotNo,
+      //     'contractDate': parkingLot?[0].contractDate,
+      //     'cancelDate': parkingLot?[0].cancelDate,
+      //     'contractType': parkingLot?[0].contractType,
+      //     'createdAt': parkingLot?[0].createdAt,
+      //     'updatedAt': parkingLot?[0].updatedAt,
+      //   },
+      // {
+      //   'id': parkingLot?[1].id,
+      //   'used': parkingLot?[1].used,
+      //   'carNo': parkingLot?[1].carNo,
+      //   'carName': parkingLot?[1].carName,
+      //   'carOwner': parkingLot?[1].carOwner,
+      //   'lotNo': parkingLot?[1].lotNo,
+      //   'contractDate': parkingLot?[1].contractDate,
+      //   'cancelDate': parkingLot?[1].cancelDate,
+      //   'contractType': parkingLot?[1].contractType,
+      //   'createdAt': parkingLot?[1].createdAt,
+      //   'updatedAt': parkingLot?[1].updatedAt,
+      // },
+      // ],
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };

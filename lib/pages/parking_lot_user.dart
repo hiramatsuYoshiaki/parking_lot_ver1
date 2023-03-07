@@ -16,15 +16,7 @@ class ParkingLotUser extends StatefulWidget {
 class _ParkingLotUserState extends State<ParkingLotUser> {
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    // appBar: AppBar(title: Text('Parking Lot User')),
-    // body: SingleChildScrollView(
-    //     child: ConstrainedBox(
-    //         constraints: const BoxConstraints(maxWidth: 1200),
-    //         child: Container(
-    //           padding: EdgeInsets.all(8),
-    //           alignment: Alignment.topLeft,
-    //           child:
+    print('ParkingLotUser');
     return Consumer<ApplicationState>(
       builder: (BuildContext context, appState, _) {
         return ParkingLotSwitch(

@@ -149,21 +149,5 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                 ],
               ))));
     }));
-    // return Center(
-    //     child: ElevatedButton(
-    //   onPressed: () {
-    //     print('Login------hworksdev@gmail.com');
-    //     widget.login(
-    //       'hworksdev@gmail.com',
-    //       'hworks0000',
-    //     );
-    //     Navigator.push(context, MaterialPageRoute(
-    //       builder: (context) {
-    //         return const HomePage();
-    //       },
-    //     ));
-    //   },
-    //   child: const Text('ログイン'),
-    // ));
   }
 }
