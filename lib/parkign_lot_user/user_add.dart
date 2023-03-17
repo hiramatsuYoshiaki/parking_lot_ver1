@@ -18,7 +18,7 @@ class UserAdd extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: const Text('Add User')),
         bottomNavigationBar: Consumer<ApplicationState>(
-          builder: (BuildContext context, appState, _) => AppBarBottom(
+          builder: (BuildContext context, appState, _) => const AppBarBottom(
               // homeState: appState.homeState,
               // setHomeState: appState.setHomeState,
               // activityState: appState.activityState,
@@ -33,7 +33,6 @@ class UserAdd extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: Consumer<ApplicationState>(
                   builder: (BuildContext context, appState, _) {
-                print('UserAdd');
                 return appState.loadingState == LoadState.waiting
                     ? UserAddForm(
                         selectedParking: appState.selectedParking,

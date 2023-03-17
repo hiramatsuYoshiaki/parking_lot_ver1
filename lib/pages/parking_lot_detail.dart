@@ -7,21 +7,14 @@ import '../component/loading_screen.dart';
 import '../model/status.dart';
 import '../ui/app_bar_bottom.dart';
 
-class UserDisplay extends StatelessWidget {
-  const UserDisplay({Key? key}) : super(key: key);
+class ParkingLotDetail extends StatelessWidget {
+  const ParkingLotDetail({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('User Dispaly')),
-        bottomNavigationBar: Consumer<ApplicationState>(
-          builder: (BuildContext context, appState, _) => const AppBarBottom(
-              // homeState: appState.homeState,
-              // setHomeState: appState.setHomeState,
-              // activityState: appState.activityState,
-              // setActivityState: appState.setActivityState,
-              ),
-        ),
+        appBar: AppBar(title: const Text('Lot Detail')),
+        bottomNavigationBar: const AppBarBottom(),
         body: SingleChildScrollView(
             child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1200),
@@ -175,27 +168,27 @@ class UserDisplay extends StatelessWidget {
                                             WrapCrossAlignment.center,
                                         spacing: 16,
                                         children: [
-                                          //   ElevatedButton(
-                                          //       onPressed: () {
-                                          //         appState.setSelectedParking(
-                                          //             appState.selectedParking);
-                                          //         appState.setParkingLotUserState(
-                                          //             ParkingLotUserState
-                                          //                 .modification);
-                                          //         Navigator.of(context).pushNamed(
-                                          //             '/parking_lot_user');
-                                          //       },
-                                          //       child: const Text('修正')),
-                                          //   ElevatedButton(
-                                          //       onPressed: () {
-                                          //         appState.setSelectedParking(
-                                          //             appState.selectedParking);
-                                          //         appState.setParkingLotUserState(
-                                          //             ParkingLotUserState.cancel);
-                                          //         Navigator.of(context).pushNamed(
-                                          //             '/parking_lot_user');
-                                          //       },
-                                          //       child: const Text('解約')),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                appState.setSelectedParking(
+                                                    appState.selectedParking);
+                                                appState.setParkingLotUserState(
+                                                    ParkingLotUserState
+                                                        .modification);
+                                                Navigator.of(context).pushNamed(
+                                                    '/parking_lot_user');
+                                              },
+                                              child: const Text('修正')),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                appState.setSelectedParking(
+                                                    appState.selectedParking);
+                                                appState.setParkingLotUserState(
+                                                    ParkingLotUserState.cancel);
+                                                Navigator.of(context).pushNamed(
+                                                    '/parking_lot_user');
+                                              },
+                                              child: const Text('解約')),
                                           ElevatedButton(
                                               onPressed: () {
                                                 Navigator.of(context).pop();
@@ -239,51 +232,8 @@ class UserDisplay extends StatelessWidget {
                                     // ),
                                   ]))
                             : const LoadingScreen(
-                                title: 'Now Loding ... Parkign Lot User');
+                                title: 'Now Loding ... Parkign Lot Detail');
                       },
-                    ))))
-        // Consumer<ApplicationState>(
-        //   builder: (BuildContext context, appState, _) {
-        //     return appState.loadingState == LoadState.waiting
-        //         ? Text('display')
-        //         : const LoadingScreen(title: 'Now Loding ... Parkign Lot User');
-        //   },
-        // )
-        );
+                    )))));
   }
-  // return Consumer<ApplicationState>(
-  //     builder: (BuildContext context, appState, _) {
-  //   return Container(
-  //       child: Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text('id ${appState.selectedParking.id}'),
-  //       Text('契約者 ${appState.selectedParking.contractor}'),
-  //       Text('車番 ${appState.selectedParking.carNo}'),
-  //       Text('車種 ${appState.selectedParking.carName}'),
-  //       // Text('契約日 ${appState.selectedParking.id}'),
-  //       // Text('解約日 ${appState.selectedParking.id}'),
-  //       // Text('料金 ${appState.selectedParking.id}'),
-  //       // Text('契約種別 ${appState.selectedParking.id}'),
-  //       TextButton(
-  //         child: const Text('修正'),
-  //         onPressed: () {
-  //           // appState.setSelectedParking(
-  //           //     appState.parking[index]);
-  //           appState.setParkingLotUserState(ParkingLotUserState.modification);
-  //           Navigator.of(context).pushNamed('/parking_lot_user');
-  //         },
-  //       ),
-  //       TextButton(
-  //         child: const Text('解約'),
-  //         onPressed: () {
-  //           // appState.setSelectedParking(
-  //           //     appState.parking[index]);
-  //           appState.setParkingLotUserState(ParkingLotUserState.cancel);
-  //           Navigator.of(context).pushNamed('/parking_lot_user');
-  //         },
-  //       ),
-  //     ],
-  //   ));
-  // });
 }

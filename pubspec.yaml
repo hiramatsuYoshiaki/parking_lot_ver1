@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^4.3.1
   provider: ^6.0.5
   firebase_ui_auth: ^1.1.7
+  flutter_native_splash: ^2.2.18
 
 dev_dependencies:
   flutter_test:
@@ -94,3 +95,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_native_splash:
+  color: "#42a5f5"
+  image: 'web/icons/Icon-maskable-192.png'
+  web: true
+  android_12:
+   

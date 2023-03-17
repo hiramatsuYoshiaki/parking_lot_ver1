@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'application_state.dart';
 import 'pages/arrangement.dart';
@@ -9,13 +10,23 @@ import 'pages/contractor_list.dart';
 import 'pages/home_page.dart';
 import 'pages/logout.dart';
 import 'pages/not_found_page.dart';
+import 'pages/parking_lot_detail.dart';
 import 'pages/parking_lot_list.dart';
 import 'pages/parking_lot_user.dart';
 import 'auth_guard.dart';
 
 void main() {
+//splash
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+//--------splash
+
   runApp(ChangeNotifierProvider(
       create: (context) => ApplicationState(), child: const MyApp()));
+  //
+  //splash
+  FlutterNativeSplash.remove();
+  //--------splash
 }
 
 class MyApp extends StatelessWidget {
@@ -41,8 +52,22 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/home',
       routes: {
-        '/': (content) => const HomePage(),
-        '/home': (context) => const HomePage(),
+        // '/': (content) => const HomePage(),
+        '/': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const HomePage(),
+                  )),
+            )),
+        // '/home': (context) => const HomePage(),
+        '/home': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const HomePage(),
+                  )),
+            )),
         //駐車場区画一覧
         '/parking_lot_list': ((context) => Consumer<ApplicationState>(
               builder: ((context, appState, _) => AuthGuard(
@@ -51,15 +76,15 @@ class MyApp extends StatelessWidget {
                     child: const ParkingLotList(),
                   )),
             )),
-        //区画使用者
-        // '/parking_lot_user': (context) => const ParkingLotUser(),
-        '/parking_lot_user': ((context) => Consumer<ApplicationState>(
+        //駐車場区画詳細情報
+        '/parking_lot_detail': ((context) => Consumer<ApplicationState>(
               builder: ((context, appState, _) => AuthGuard(
                     loginState: appState.loginState,
                     guard: const Auth(),
-                    child: const ParkingLotUser(),
+                    child: const ParkingLotDetail(),
                   )),
             )),
+
         //駐車場配置
         // '/arrangement': (context) => const Arrangement(),
         '/arrangement': ((context) => Consumer<ApplicationState>(
@@ -76,6 +101,15 @@ class MyApp extends StatelessWidget {
                     loginState: appState.loginState,
                     guard: const Auth(),
                     child: const ContractorList(),
+                  )),
+            )),
+        //区画使用、修正、登録、解約
+        // '/parking_lot_user': (context) => const ParkingLotUser(),
+        '/parking_lot_user': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const ParkingLotUser(),
                   )),
             )),
         //契約者

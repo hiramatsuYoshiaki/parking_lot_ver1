@@ -72,6 +72,16 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
+  int numberOfContract = 38;
+  int getNumberOfContract() {
+    int cnt = 0;
+    for (var element in parking) {
+      element.used ? cnt++ : null;
+    }
+
+    return cnt;
+  }
+
   Parking _selectdParking = Parking(
     id: '',
     used: false,

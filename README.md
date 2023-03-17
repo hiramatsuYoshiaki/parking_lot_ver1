@@ -1159,6 +1159,71 @@ children: widget.selectedActivity.actual.ridePhotos
 ```
 imageUrlは、firebase strageのダウンロードURL 
 
+# flutter_native_splashでスプラッシュ画面(Splash Screen)を実装する
+https://qiita.com/kokogento/items/12c44b6350ed8056c97e
+
+
+1.main.dart編集
+`main.dart`
+```
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+
+void main() {
+//splash
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+//--------splash
+
+  runApp(ChangeNotifierProvider(
+      create: (context) => ApplicationState(), child: const MyApp()));
+  //
+  //splash
+  FlutterNativeSplash.remove();
+  //--------splash 
+}
+```
+2. pubspec.yaml編集
+`pubspec.yaml`
+```
+flutter_native_splash:
+ color: "#42a5f5"
+ android_12:
+```
+
+3.コマンドを実行
+`flutter pub get`
+```
+Running "flutter pub get" in parking_lot_ver1...                    3.3s
+```
+`flutter pub run flutter_native_splash:create`
+```
+[Android] Updating launch background(s) with splash image path...
+[Android]  - android/app/src/main/res/drawable/launch_background.xml
+[Android]  - android/app/src/main/res/drawable-v21/launch_background.xml
+[Android] Updating styles...
+[Android]  - android/app/src/main/res/values/styles.xml
+[iOS] Updating ios/Runner/Info.plist for status bar hidden/visible
+[Web] Creating background images
+[Web] Creating CSS
+[Web] Updating index.html
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                 WHAT IS NEW:                               ║
+║ You can now keep the splash screen up while your app initializes!          ║
+║ No need for a secondary splash screen anymore. Just use the remove()       ║
+║ method to remove the splash screen after your initialization is complete.  ║
+║ Check the docs for more info.                                              ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+✅ Native splash complete.
+Now go finish building something awesome! 💪 You rock! 🤘🤩
+Like the package? Please give it a 👍 here: https://pub.dev/packages/flutter_native_splash
+
+```
+
+
+
+
+
 # Flutter Web にスプラッシュ スクリーンを追加する 
 https://medium.com/flutter-community/adding-a-splash-screen-to-flutter-web-7930e5e44bd  
 `web/img/h-logo.svg`
@@ -1315,3 +1380,85 @@ https://api.flutter.dev/flutter/widgets/Image-class.html
 
 
 
+# CustomScrollView の SliverToBoxAdapter 内でコンテナーの幅が機能しない
+参考にした記事
+https://stackoverflow.com/questions/72723801/how-to-set-width-on-flutter-slivergrid
+https://stackoverflow.com/questions/74246341/width-of-container-is-not-working-inside-slivertoboxadapter-in-customscrollview
+
+問題点　
+1. コンテナに対する最大幅の制約が SliverToBoxAdapter で完全に無視されます。
+2. SliverToBoxAdapterのコンテナは、使用可能な画面の全幅まで拡大されます。
+3. SliverToBoxAdapterのコンテナは、ConstrainedBox の maxWidth プロパティを無視します。
+4. 
+
+対策　
+1. SliverToBoxAdapter を SliverPadding でラップし、水平方向の幅を設定します。
+```
+ return Scaffold(
+     
+      body: CustomScrollView(
+        SliverPadding(
+          padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width >= 600
+                  ? (MediaQuery.of(context).size.width - 600) / 2
+                  : 8),
+          sliver: SliverToBoxAdapter(
+            child: Card(
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              elevation: 8,
+              child: ListTile(
+                leading: const Icon(
+                  Icons.grid_view,
+                ),
+                title: const Text('レイアウト詳細を表示'),
+                trailing: IconButton(
+                  tooltip: 'レイアウト詳細を表示',
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/arrangement');
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ));
+```
+2. SliverToBoxAdapterで、Alignウィジェットでコンテナをラップする必要します。
+```
+return Scaffold(
+     
+      body: CustomScrollView(
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width >=
+                        600
+                    ? (MediaQuery.of(context).size.width - 600) /
+                        2
+                    : 8),
+            child: Align(
+              alignment: Alignment.center,
+              child: Card(
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                elevation: 8,
+                child: ListTile(
+                  leading: const Icon(
+                    // Icons.settings,
+                    Icons.person,
+                  ),
+                  title: const Text('契約者情報を表示'),
+                  // trailing: Icon(Icons.arrow_forward),
+                  trailing: IconButton(
+                    tooltip: 'レイアウト詳細を表示',
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed('/contractor_list');
+                    },
+                  ),
+                ),
+              ),
+            )))              
+      ));
+```

@@ -78,96 +78,168 @@ class lotLayout extends StatefulWidget {
 class _lotLayoutState extends State<lotLayout> {
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 4 / 3, //横幅:高さ = 4:2
-        ),
-        itemCount: widget.parking.length,
-        itemBuilder: (BuildContext context, int index) {
-          return SingleChildScrollView(
-              child: Center(
-                  child: GestureDetector(
-            onTap: () {
-              if (widget.parking[index].used) {
-                widget.setSelectedParking(widget.parking[index]);
-                widget.setParkingLotUserState(ParkingLotUserState.display);
-                //選択した契約者情報をステートに保持
-                Contract selectedContract = widget.contracts.firstWhere(
-                    (element) =>
-                        element.id == widget.parking[index].contractorId);
-                widget.setSelectedContract(selectedContract);
-                ParkingLot selectedParlingLot = selectedContract.parkingLot!
-                    .firstWhere((element) =>
-                        widget.parking[index].lotNo == element.lotNo);
-                widget.setSelectedParkingLot(selectedParlingLot);
-                Navigator.of(context).pushNamed('/parking_lot_user');
-              } else {
-                widget.setSelectedParking(widget.parking[index]);
-                // print('push button add');
-                widget.setParkingLotUserState(ParkingLotUserState.add);
-                // widget.getContract();
-                Navigator.of(context).pushNamed('/parking_lot_user');
-              }
-            },
-            child: Container(
-                margin: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-                padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-                color: widget.parking[index].used
-                    ? Colors.green[200]
-                    : Colors.grey[200],
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(widget.parking[index].lotNo.toString(),
-                        style: const TextStyle(
-                            color: Colors.black87, fontSize: 24)),
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.end,
-                      spacing: 8,
-                      children: [
-                        Text(widget.parking[index].contractor),
-                      ],
-                    ),
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.end,
-                      spacing: 8,
-                      children: [
-                        Text(widget.parking[index].carNo),
-                      ],
-                    ),
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.end,
-                      spacing: 8,
-                      children: [
-                        Text(widget.parking[index].carName),
-                      ],
-                    ),
-                  ],
-                )
-                // child: ListTile(
-                //   leading: Text(widget.parking[index].lotNo.toString(),
-                //       style:
-                //           const TextStyle(color: Colors.black87, fontSize: 24)),
-                //   title: Text(widget.parking[index].contractor),
-                //   subtitle: Wrap(
-                //     crossAxisAlignment: WrapCrossAlignment.end,
-                //     spacing: 8,
-                //     children: [
-                //       Text(widget.parking[index].carNo),
-                //       Text(widget.parking[index].carName),
-                //     ],
-
-                //   ),
-                //   // trailing: const Icon(Icons.more_vert),
-                // )
+    return Center(
+        child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1200),
+            child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 4 / 3, //横幅:高さ = 4:2
                 ),
-          )));
-        });
+                itemCount: widget.parking.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      if (widget.parking[index].used) {
+                        //選択した区画情報をステートに保持
+                        widget.setSelectedParking(widget.parking[index]);
+                        //選択した契約者情報をステートに保持
+                        Contract selectedContract = widget.contracts.firstWhere(
+                            (element) =>
+                                element.id ==
+                                widget.parking[index].contractorId);
+                        widget.setSelectedContract(selectedContract);
+                        ParkingLot selectedParlingLot =
+                            selectedContract.parkingLot!.firstWhere((element) =>
+                                widget.parking[index].lotNo == element.lotNo);
+                        widget.setSelectedParkingLot(selectedParlingLot);
+
+                        // widget.setParkingLotUserState(
+                        //     ParkingLotUserState.display);
+                        // Navigator.of(context).pushNamed('/parking_lot_user');
+                        Navigator.of(context).pushNamed('/parking_lot_detail');
+                      } else {
+                        widget.setSelectedParking(widget.parking[index]);
+                        // print('push button add');
+                        widget.setParkingLotUserState(ParkingLotUserState.add);
+                        // widget.getContract();
+                        Navigator.of(context).pushNamed('/parking_lot_user');
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.topCenter,
+                      margin: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+                      padding: const EdgeInsets.all(8),
+                      color: widget.parking[index].used
+                          ? Colors.teal[100]
+                          : Colors.grey[200],
+                      child: SingleChildScrollView(
+                          child: Column(
+                        children: [
+                          Text(widget.parking[index].lotNo.toString(),
+                              style: const TextStyle(
+                                  color: Colors.black87, fontSize: 24)),
+                          const Divider(
+                            height: 16,
+                            thickness: 2,
+                            indent: 24,
+                            endIndent: 24,
+                            color: Colors.black12,
+                          ),
+                          Text(
+                            widget.parking[index].contractor,
+                            style: const TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.parking[index].carNo,
+                            style: const TextStyle(
+                                color: Colors.black87, fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            widget.parking[index].carName,
+                            style: const TextStyle(
+                                color: Colors.black87, fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      )),
+                      // child: Wrap(
+                      //   crossAxisAlignment: WrapCrossAlignment.center,
+                      //   spacing: 8,
+                      //   children: [
+                      //     Text(widget.parking[index].lotNo.toString(),
+                      //         style: const TextStyle(
+                      //             color: Colors.black87, fontSize: 24)),
+                      //     Text(
+                      //       widget.parking[index].contractor,
+                      //       style: const TextStyle(
+                      //           color: Colors.black87, fontSize: 14),
+                      //       overflow: TextOverflow.ellipsis,
+                      //     ),
+                      //   ],
+                      // ),
+                      // child: Text(widget.parking[index].lotNo.toString(),
+                      //     style: const TextStyle(
+                      //         color: Colors.black87, fontSize: 24)),
+                    ),
+                    // child: Text(
+                    //   widget.parking[index].lotNo.toString(),
+                    // )
+                    //       style: const TextStyle(color: Colors.black87, fontSize: 24)),
+                    // child: Container(
+                    //   margin: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+                    //   padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+                    //   color: widget.parking[index].used
+                    //       ? Colors.green[200]
+                    //       : Colors.grey[200],
+                    //   alignment: Alignment.centerLeft,
+                    //   child: Text(widget.parking[index].lotNo.toString(),
+                    //       style: const TextStyle(color: Colors.black87, fontSize: 24)),
+                    // child: Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   mainAxisSize: MainAxisSize.max,
+                    //   children: [
+                    //     Wrap(
+                    //       crossAxisAlignment: WrapCrossAlignment.end,
+                    //       spacing: 8,
+                    //       children: [
+                    //         Text(widget.parking[index].lotNo.toString(),
+                    //             style: const TextStyle(
+                    //                 color: Colors.black87, fontSize: 24)),
+                    //         Text(widget.parking[index].contractor),
+                    //       ],
+                    //     ),
+                    //     Wrap(
+                    //       crossAxisAlignment: WrapCrossAlignment.end,
+                    //       spacing: 8,
+                    //       children: [
+                    //         Text(widget.parking[index].carNo),
+                    //       ],
+                    //     ),
+                    //     Wrap(
+                    //       crossAxisAlignment: WrapCrossAlignment.end,
+                    //       spacing: 8,
+                    //       children: [
+                    //         Text(widget.parking[index].carName),
+                    //       ],
+                    //     ),
+                    //   ],
+                    // )
+                    // child: ListTile(
+                    //   leading: Text(widget.parking[index].lotNo.toString(),
+                    //       style:
+                    //           const TextStyle(color: Colors.black87, fontSize: 24)),
+                    //   title: Text(widget.parking[index].contractor),
+                    //   subtitle: Wrap(
+                    //     crossAxisAlignment: WrapCrossAlignment.end,
+                    //     spacing: 8,
+                    //     children: [
+                    //       Text(widget.parking[index].carNo),
+                    //       Text(widget.parking[index].carName),
+                    //     ],
+                    //   ),
+                    //   trailing: const Icon(Icons.more_vert),
+                    // )
+                    // ),
+                    // )
+                  );
+                })));
   }
 }
-
-class FontSize {}

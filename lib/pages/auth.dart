@@ -42,20 +42,24 @@ class Auth extends StatelessWidget {
                           //       )
                           //     : const LoadingScreen(
                           //         title: 'Now Loding ... Authentication');
-                          return AuthSwitch(
-                            loginState: appState.loginState,
-                            // email: appState.email,
-                            // verifyEmail: appState.verifyEmail,
-                            signInWithEmailAndPassword:
-                                appState.signInWithEmailAndPassword,
-                            // registerAccount: appState.registerAccount,
-                            signOut: appState.signOut,
-                            setLoginState: appState.setLoginState,
-                            getCurrentUser: appState.getCurrentUser,
-                            // sendEmailVerification:
-                            //     appState.sendEmailVerification,
-                            // passReset: appState.passReset,
-                          );
+                          return appState.loadingState != LoadState.loading
+                              ? AuthSwitch(
+                                  loginState: appState.loginState,
+                                  // email: appState.email,
+                                  // verifyEmail: appState.verifyEmail,
+                                  signInWithEmailAndPassword:
+                                      appState.signInWithEmailAndPassword,
+                                  // registerAccount: appState.registerAccount,
+                                  signOut: appState.signOut,
+                                  setLoginState: appState.setLoginState,
+                                  getCurrentUser: appState.getCurrentUser,
+                                  // sendEmailVerification:
+                                  //     appState.sendEmailVerification,
+                                  // passReset: appState.passReset,
+                                )
+                              : const LoadingScreen(
+                                  title: 'Now Loding ... Authentication');
+                          ;
                         },
                       ))
                     ],
