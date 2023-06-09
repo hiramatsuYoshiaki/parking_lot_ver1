@@ -11,6 +11,7 @@ import 'firebase_options.dart';
 import 'model/contractor.dart';
 import 'model/status.dart';
 import 'model/parking.dart';
+import 'model/room.dart';
 
 class ApplicationState extends ChangeNotifier {
   //Authentication user
@@ -36,6 +37,626 @@ class ApplicationState extends ChangeNotifier {
     _parkingLotUserState = status;
     notifyListeners();
   }
+
+  //アパート部屋情報
+  // List<Map<String, dynamic>> rooms = [
+  //   {
+  //     "name": "A101",
+  //     "building": "A",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "A102",
+  //     "building": "A",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "A201",
+  //     "building": "A",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "A202",
+  //     "building": "A",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "----",
+  //     "building": "-",
+  //     "floor": 0,
+  //     "floorPlan": "---",
+  //     "rent": 0,
+  //     "used": true,
+  //     "exist": false,
+  //   },
+  //   {
+  //     "name": "----",
+  //     "building": "-",
+  //     "floor": 0,
+  //     "floorPlan": "---",
+  //     "rent": 0,
+  //     "used": true,
+  //     "exist": false,
+  //   },
+  //   {
+  //     "name": "B101",
+  //     "building": "B",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": false,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "B102",
+  //     "building": "B",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": false,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "B103",
+  //     "building": "B",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "B201",
+  //     "building": "B",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "B202",
+  //     "building": "B",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "B203",
+  //     "building": "B",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "C101",
+  //     "building": "C",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "C102",
+  //     "building": "A",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "C201",
+  //     "building": "A",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "C202",
+  //     "building": "A",
+  //     "floor": 1,
+  //     "floorPlan": "3DK",
+  //     "rent": 48000,
+  //     "used": true,
+  //     "exist": true,
+  //   },
+  //   {
+  //     "name": "----",
+  //     "building": "-",
+  //     "floor": 0,
+  //     "floorPlan": "---",
+  //     "rent": 0,
+  //     "used": true,
+  //     "exist": false,
+  //   },
+  //   {
+  //     "name": "----",
+  //     "building": "-",
+  //     "floor": 0,
+  //     "floorPlan": "---",
+  //     "rent": 0,
+  //     "used": true,
+  //     "exist": false,
+  //   },
+  // ];
+  // late final List<Room> _room = <Room>[];
+
+  late final List<Room> _roomInUse = <Room>[];
+  List<Room> get roomInUse => _roomInUse;
+  void getRoomInUse() async {
+    print('表示用アパート情報作成');
+
+    for (var element in _room) {
+      // debugPrint('make data *************');
+      // debugPrint(element.name);
+      _roomInUse.add(Room(
+          name: element.name,
+          building: element.building,
+          floor: element.floor,
+          floorPlan: element.floorPlan,
+          rent: element.rent,
+          used: element.used,
+          exist: element.exist,
+          createdAt: element.createdAt,
+          updateAt: element.updateAt));
+
+      if (element.name == "A202" ||
+          element.name == "C202" ||
+          element.name == "D202" ||
+          element.name == "E202" ||
+          element.name == "F202" ||
+          element.name == "G202" ||
+          element.name == "H202") {
+        _roomInUse.add(Room(
+            name: "",
+            building: "",
+            floor: 0,
+            floorPlan: "",
+            rent: 0,
+            used: false,
+            exist: false,
+            createdAt: DateTime.now(),
+            updateAt: DateTime.now()));
+        _roomInUse.add(Room(
+            name: "",
+            building: "",
+            floor: 0,
+            floorPlan: "",
+            rent: 0,
+            used: false,
+            exist: false,
+            createdAt: DateTime.now(),
+            updateAt: DateTime.now()));
+      }
+    }
+    // await Future.forEach(_room, (element) async {
+    //   debugPrint('make data *************');
+    //   debugPrint(element.name);
+    //   _roomInUse.add(element);
+    // if (element.name == "A202" ||
+    //     element.name == "C202" ||
+    //     element.name == "D202" ||
+    //     element.name == "E202" ||
+    //     element.name == "F202" ||
+    //     element.name == "G202" ||
+    //     element.name == "H202") {
+    //   _roomInUse.add(Room(
+    //       name: "",
+    //       building: "",
+    //       floor: 0,
+    //       floorPlan: "",
+    //       rent: 0,
+    //       used: false,
+    //       exist: false,
+    //       createdAt: DateTime.now(),
+    //       updateAt: DateTime.now()));
+    //   _roomInUse.add(Room(
+    //       name: "",
+    //       building: "",
+    //       floor: 0,
+    //       floorPlan: "",
+    //       rent: 0,
+    //       used: false,
+    //       exist: false,
+    //       createdAt: DateTime.now(),
+    //       updateAt: DateTime.now()));
+    // }
+    // });
+
+    // notifyListeners();
+  }
+
+  List<Room> get room => _room;
+
+  final List<Room> _room = <Room>[
+    Room(
+        name: "A101",
+        building: "A",
+        floor: 1,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "A102",
+        building: "A",
+        floor: 1,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "A201",
+        building: "A",
+        floor: 2,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "A202",
+        building: "A",
+        floor: 2,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "B101",
+        building: "B",
+        floor: 1,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: false,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "B102",
+        building: "B",
+        floor: 1,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "B103",
+        building: "B",
+        floor: 1,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "B201",
+        building: "B",
+        floor: 2,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: false,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "B202",
+        building: "B",
+        floor: 2,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "B203",
+        building: "B",
+        floor: 2,
+        floorPlan: "3DK",
+        rent: 48000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "C101",
+        building: "C",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "C102",
+        building: "C",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "C201",
+        building: "C",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "C202",
+        building: "C",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "D101",
+        building: "D",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "D102",
+        building: "D",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "D201",
+        building: "D",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "D202",
+        building: "D",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "E101",
+        building: "E",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "E102",
+        building: "E",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "E201",
+        building: "E",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "E202",
+        building: "E",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "F101",
+        building: "F",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: false,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "F102",
+        building: "F",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: false,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "F201",
+        building: "F",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "F202",
+        building: "F",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "G101",
+        building: "G",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "G102",
+        building: "G",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "G201",
+        building: "G",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: false,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "G202",
+        building: "G",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "H101",
+        building: "H",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "H102",
+        building: "H",
+        floor: 1,
+        floorPlan: "2LDK",
+        rent: 50000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "H201",
+        building: "H",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+    Room(
+        name: "H202",
+        building: "H",
+        floor: 2,
+        floorPlan: "2LDK",
+        rent: 51000,
+        used: true,
+        exist: true,
+        createdAt: DateTime.now(),
+        updateAt: DateTime.now()),
+  ];
+  // final List<Parking> _parking = <Parking>[
+  //   Parking(
+  //       id: '1',
+  //       used: true,
+  //       contractor: 'レムコ　エメネプール',
+  //       carNo: '岡山333あ1234',
+  //       carName: 'BMW320d'),
+  //   Parking(
+  //       id: '2',
+  //       used: true,
+  //       contractor: 'タデイ　ポガチャル',
+  //       carNo: '岡山555あ5678',
+  //       carName: 'ホンダシビックタイプR'),
+  //   Parking(
+  //       id: '3',
+  //       used: true,
+  //       contractor: 'ヨナス　ビンゲゴー',
+  //       carNo: '岡山555あ1000',
+  //       carName: 'レクサスLC500'),
+  //   Parking(id: '4', used: false, contractor: '', carNo: '', carName: ''),
+  // ];
+  // リフォム情報
+
   //駐車場区画情報
   // late List<Parking> _parking = <Parking>[
   //   Parking(id: '1', used: false, contractor: '', carNo: '', carName: ''),
@@ -152,9 +773,15 @@ class ApplicationState extends ChangeNotifier {
   Future<void> init() async {
     print('init start-------');
     setloadingState(LoadState.loading);
+
+    //入居状況の表示用データ作成
+    debugPrint('firebase apart info ++++++++++++++++++++');
+    getRoomInUse();
+
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    //firebase 認証
     FirebaseAuth.instance.userChanges().listen((user) async {
       print('ApplicationState init userChanges------ start ');
 
@@ -207,6 +834,7 @@ class ApplicationState extends ChangeNotifier {
   }
 
   //契約者情報をすべて取得
+  //firebase コレクション　constractor を取得
   Future<void> getContract() async {
     debugPrint('getContract()----start!!!');
     //ローディング画面表示
@@ -223,9 +851,9 @@ class ApplicationState extends ChangeNotifier {
         .get()
         .then((QuerySnapshot querySnapshot) => {
               querySnapshot.docs.forEach((doc) {
-                debugPrint('get contract ******************');
-                debugPrint('get contract id---> ${doc['id']} ');
-                debugPrint('get contract name----> ${doc['name']} ');
+                // debugPrint('get contract ******************');
+                // debugPrint('get contract id---> ${doc['id']} ');
+                // debugPrint('get contract name----> ${doc['name']} ');
                 //parkingLot
                 // debugPrint(doc['parkingLot'][0]?['lotNo'].toString());
                 // debugPrint(doc['parkingLot'][0]?['id'].toString());

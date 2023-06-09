@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:parking_lot_ver1/pages/contractor_detail.dart';
+import 'package:parking_lot_ver1/pages/lot_location.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
@@ -86,7 +88,6 @@ class MyApp extends StatelessWidget {
             )),
 
         //駐車場配置
-        // '/arrangement': (context) => const Arrangement(),
         '/arrangement': ((context) => Consumer<ApplicationState>(
               builder: ((context, appState, _) => AuthGuard(
                     loginState: appState.loginState,
@@ -95,7 +96,6 @@ class MyApp extends StatelessWidget {
                   )),
             )),
         //契約者
-        // '/contractor_list': (context) => const ContractorList(),
         '/contractor_list': ((context) => Consumer<ApplicationState>(
               builder: ((context, appState, _) => AuthGuard(
                     loginState: appState.loginState,
@@ -104,7 +104,6 @@ class MyApp extends StatelessWidget {
                   )),
             )),
         //区画使用、修正、登録、解約
-        // '/parking_lot_user': (context) => const ParkingLotUser(),
         '/parking_lot_user': ((context) => Consumer<ApplicationState>(
               builder: ((context, appState, _) => AuthGuard(
                     loginState: appState.loginState,
@@ -112,16 +111,23 @@ class MyApp extends StatelessWidget {
                     child: const ParkingLotUser(),
                   )),
             )),
+        //区画の場所表示
+        '/lot_location': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const LotLocation(),
+                  )),
+            )),
         //契約者
-        // '/contractor': (context) => const Contractor(),
-        // '/contractor': ((context) => Consumer<ApplicationState>(
-        //       builder: ((context, appState, _) => AuthGuard(
-        //             loginState: appState.loginState,
-        //             guard: const Auth(),
-        //             child: const Contractor(),
-        //           )),
-        //     )),
-        //
+        '/contractor_detail': ((context) => Consumer<ApplicationState>(
+              builder: ((context, appState, _) => AuthGuard(
+                    loginState: appState.loginState,
+                    guard: const Auth(),
+                    child: const ContractorDetail(),
+                  )),
+            )),
+
         '/login': (context) => const Auth(), //ログイン
         '/logout': (context) => const Logout(), //ログアウト
       },

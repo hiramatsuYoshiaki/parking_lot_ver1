@@ -18,16 +18,11 @@ class ContractorList extends StatefulWidget {
 class _ContractorListState extends State<ContractorList> {
   @override
   Widget build(BuildContext context) {
-    print('parking_contractor_list');
+    // print('parking_contractor_list');
     return Scaffold(
       appBar: AppBar(title: const Text('Contractor List')),
       bottomNavigationBar: Consumer<ApplicationState>(
-        builder: (BuildContext context, appState, _) => AppBarBottom(
-            // homeState: appState.homeState,
-            // setHomeState: appState.setHomeState,
-            // activityState: appState.activityState,
-            // setActivityState: appState.setActivityState,
-            ),
+        builder: (BuildContext context, appState, _) => const AppBarBottom(),
       ),
       body: Consumer<ApplicationState>(
           builder: (BuildContext context, appState, _) {
@@ -61,70 +56,155 @@ class _ContractorListState extends State<ContractorList> {
                                           CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Wrap(
-                                          children: [
-                                            Text(appState.contracts[index].name,
-                                                style: const TextStyle(
-                                                    fontSize: 24)),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Wrap(children: [
-                                          Text(appState
-                                              .contracts[index].address),
-                                        ]),
-                                        const SizedBox(width: 16),
-                                        Text(appState.contracts[index].tel),
-                                        const SizedBox(width: 32),
-                                        const Divider(
-                                          height: 16,
-                                          thickness: 1,
-                                          indent: 8,
-                                          endIndent: 8,
-                                          color: Colors.black26,
-                                        ),
+                                        ListTile(
+                                            // leading: Icon(Icons.person),
+                                            title: Wrap(
+                                              children: [
+                                                Text(
+                                                    appState
+                                                        .contracts[index].name,
+                                                    style: const TextStyle(
+                                                        fontSize: 24)),
+                                              ],
+                                            ),
+                                            // subtitle: Wrap(children: [
+                                            //   Text(appState
+                                            //       .contracts[index].address),
+                                            // ]),
+                                            // subtitle: Column(
+                                            //   crossAxisAlignment:
+                                            //       CrossAxisAlignment.start,
+                                            //   children: [
+                                            //     Container(
+                                            //         padding: const EdgeInsets
+                                            //                 .symmetric(
+                                            //             horizontal: 16),
+                                            //         child: Wrap(children: [
+                                            //           Text(appState
+                                            //               .contracts[index]
+                                            //               .address),
+                                            //         ])),
+                                            //     Container(
+                                            //         padding: const EdgeInsets
+                                            //                 .symmetric(
+                                            //             horizontal: 16),
+                                            //         child: Wrap(children: [
+                                            //           Text(appState
+                                            //               .contracts[index]
+                                            //               .tel),
+                                            //         ])),
+                                            //   ],
+                                            // ),
+                                            trailing: Icon(Icons.more_vert)),
+                                        Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16),
+                                            child: Wrap(children: [
+                                              Text(appState
+                                                  .contracts[index].address),
+                                            ])),
+                                        Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16),
+                                            child: Wrap(children: [
+                                              Text(appState
+                                                  .contracts[index].tel),
+                                            ])),
+                                        // const SizedBox(width: 32),
+                                        // const Divider(
+                                        //   height: 16,
+                                        //   thickness: 1,
+                                        //   indent: 8,
+                                        //   endIndent: 8,
+                                        //   color: Colors.black26,
+                                        // ),
                                       ],
                                     )
                                   : const SizedBox(height: 0),
 
                               //区画情報--------------
+                              ListTile(
+                                  contentPadding: EdgeInsets.all(8),
+                                  onTap: (() {
+                                    // Navigator.of(context).pushNamed('/contractor_detail');
+                                  }),
+                                  title: Container(
+                                    alignment: Alignment.bottomLeft,
+                                    // padding:
+                                    //     const EdgeInsets.symmetric(horizontal: 8),
+                                    child: Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.end,
+                                        spacing: 8,
+                                        children: [
+                                          Text(
+                                            '${appState.contracts[index].parkingLot![idx].lotNo.toString()}区画 ',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14,
+                                                color: Colors.black87),
+                                          ),
+                                          appState.contracts[index]
+                                                  .parkingLot![idx].used
+                                              ? const Text('契約中',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 14,
+                                                      color: Colors.blueAccent))
+                                              : const Text('解約',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 14,
+                                                      color: Colors.redAccent)),
+                                          appState
+                                                      .contracts[index]
+                                                      .parkingLot![idx]
+                                                      .contractType ==
+                                                  'person'
+                                              ? const Text('個人契約')
+                                              : const Text('ダイワリビング契約'),
+                                        ]),
+                                  ),
+                                  trailing: Icon(Icons.arrow_forward)),
+                              // Container(
+                              //   alignment: Alignment.bottomLeft,
+                              //   padding:
+                              //       const EdgeInsets.symmetric(horizontal: 8),
+                              //   child: Wrap(
+                              //       crossAxisAlignment: WrapCrossAlignment.end,
+                              //       spacing: 8,
+                              //       children: [
+                              //         Text(
+                              //           '${appState.contracts[index].parkingLot![idx].lotNo.toString()}区画 ',
+                              //           style: const TextStyle(
+                              //               fontWeight: FontWeight.w600,
+                              //               fontSize: 14,
+                              //               color: Colors.black87),
+                              //         ),
+                              //         appState.contracts[index].parkingLot![idx]
+                              //                 .used
+                              //             ? const Text('契約中',
+                              //                 style: TextStyle(
+                              //                     fontWeight: FontWeight.w600,
+                              //                     fontSize: 14,
+                              //                     color: Colors.blueAccent))
+                              //             : const Text('解約',
+                              //                 style: TextStyle(
+                              //                     fontWeight: FontWeight.w600,
+                              //                     fontSize: 14,
+                              //                     color: Colors.redAccent)),
+                              //         appState.contracts[index].parkingLot![idx]
+                              //                     .contractType ==
+                              //                 'person'
+                              //             ? const Text('個人契約')
+                              //             : const Text('ダイワリビング契約'),
+                              //       ]),
+                              // ),
                               Container(
-                                alignment: Alignment.bottomLeft,
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: Wrap(
-                                    crossAxisAlignment: WrapCrossAlignment.end,
-                                    spacing: 8,
-                                    children: [
-                                      Text(
-                                        '${appState.contracts[index].parkingLot![idx].lotNo.toString()}区画 ',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
-                                            color: Colors.black87),
-                                      ),
-                                      appState.contracts[index].parkingLot![idx]
-                                              .used
-                                          ? const Text('契約中',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14,
-                                                  color: Colors.blueAccent))
-                                          : const Text('解約',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 14,
-                                                  color: Colors.redAccent)),
-                                      appState.contracts[index].parkingLot![idx]
-                                                  .contractType ==
-                                              'person'
-                                          ? const Text('個人契約')
-                                          : const Text('ダイワリビング契約'),
-                                    ]),
-                              ),
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Wrap(
                                     crossAxisAlignment:
                                         WrapCrossAlignment.center,
@@ -139,7 +219,7 @@ class _ContractorListState extends State<ContractorList> {
                               ),
                               Container(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Wrap(children: [
                                   Text(appState.contracts[index]
                                       .parkingLot![idx].carOwner),
@@ -148,7 +228,7 @@ class _ContractorListState extends State<ContractorList> {
                               ),
                               Container(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Wrap(
                                     crossAxisAlignment:
                                         WrapCrossAlignment.center,
@@ -175,7 +255,7 @@ class _ContractorListState extends State<ContractorList> {
                                               color: Colors.redAccent)),
                                     ]),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 16),
                             ],
                           );
                         }),
